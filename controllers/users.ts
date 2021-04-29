@@ -4,7 +4,15 @@ import bcrypt from "bcrypt";
 
 import { create } from "../middleware/Token";
 import { createDevice, isExistDevice } from "../services/devices";
-import { createUser, isEmailExist, getUserSalt, isUserValid, getIdByEmail, isUserHasCode } from "../services/users";
+import {
+    createUser,
+    isEmailExist,
+    getUserSalt,
+    isUserValid,
+    getIdByEmail,
+    isUserHasCode,
+    setUserPassword
+} from "../services/users";
 
 interface Ibcrypt {
     saltRounds: number,
@@ -77,8 +85,18 @@ export async function signIn(req: express.Request, res: express.Response) {
 
 export async function recoverUserPassword(req: express.Request, res: express.Response) {
     try {
-        const { password, repeatPassword, code, email } = req.body;
-
+        const { password, repeatPassword, code, userId } = req.body;
+        if(password === repeatPassword) {
+            const isValidCode: boolean = await isUserHasCode(userId, code);
+            if(isValidCode) {
+                await setUserPassword(userId, password);
+                res.status(200).json({ message: 'password was changed' })
+            } else {
+                res.status(400).json({ error: 'incorrect data to recover password' });
+            }
+        } else {
+            res.status(400).json({ error: 'password mismatch' });
+        }
     } catch (e) {
         res.status(500).json({ error: `Can\`t recover password \n${ e }` });
     }
@@ -87,17 +105,21 @@ export async function recoverUserPassword(req: express.Request, res: express.Res
 export async function registerDevice(req: express.Request, res: express.Response) {
     try {
         const { ip, browser, code, userId } = req.body;
-        const isValidCode: boolean = await isUserHasCode(userId, code);
-        const isUnique = await isExistDevice(userId, ip, browser);
-        if(isValidCode) {
-            if(ip && browser) {
-                await createDevice(ip, browser, userId);
-                res.status(200).json({ message: 'device is register' });
+        const isUnique = !(await isExistDevice(userId, ip, browser));
+        if(isUnique) {
+            const isValidCode: boolean = await isUserHasCode(userId, code);
+            if(isValidCode) {
+                if(ip && browser) {
+                    await createDevice(ip, browser, userId);
+                    res.status(200).json({ message: 'device is register' });
+                } else {
+                    res.status(400).json({ error: 'invalid fields' });
+                }
             } else {
-                res.status(400).json({ error: 'invalid fields' });
+                res.status(400).json({ error: 'invalid code' });
             }
         } else {
-            res.status(400).json({ error: 'invalid code' });
+            res.status(400).json({ error: 'This device already exists' });
         }
     } catch (e) {
         res.status(500).json({ error: `Can\`t register device \n${ e }` });

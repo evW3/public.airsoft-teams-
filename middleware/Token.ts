@@ -3,7 +3,7 @@ import { Response, Request, NextFunction } from "express";
 import config from 'config';
 
 import { getUserDevices } from "../services/devices";
-import { getEmailByUserId } from "../services/users";
+import { getEmailByUserId, getIdByEmail, isEmailExist } from "../services/users";
 import { sendSimpleMail } from "../utils/smtp";
 import { createCode } from "../services/verificationCodes";
 
@@ -30,10 +30,32 @@ const deviceConfigure = async (userId: number, ip: string, browser: string) => {
     const email: string = await getEmailByUserId(userId);
 
     await sendSimpleMail(
-        `${ url }/recover-password?token=${ tokenToActivateDevice }`,
+        `${ url }/register-device?token=${ tokenToActivateDevice }`,
         "Register new device",
         email
     );
+}
+
+export async function sendRecoverToken(req: Request, res: Response) {
+    try {
+        const { email } = req.body;
+        const isExists: boolean = email && await isEmailExist(email);
+        if(isExists) {
+            const userId: number = await getIdByEmail(email);
+            const code: string = await createCode(userId);
+            const tokenToRecoverPassword: string = jwt.sign({ userId, code }, tokenData.codesKey, { expiresIn: tokenData.codesExpiresIn });
+            await sendSimpleMail(
+                `${ url }/recover-password?token=${ tokenToRecoverPassword }`,
+                "Recover user password",
+                email
+            );
+            res.status(200).json({ message: 'check email to recover password' });
+        } else {
+            res.status(400).json({ error: 'Can`t find user' });
+        }
+    } catch (e) {
+        res.status(500).json({ error: `Can\`t send recover token` });
+    }
 }
 
 export async function create(user: object) {

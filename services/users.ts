@@ -36,3 +36,7 @@ export async function isUserHasCode(id: string, code: string): Promise<boolean> 
         }
     }) !== 0;
 }
+
+export async function setUserPassword(id: number, password: string) {
+    await Users.update({ password },{ where: { id } });
+}
