@@ -1,9 +1,10 @@
 import * as express from "express";
 import config from "config";
 import bcrypt from "bcrypt";
+
 import { create } from "../middleware/Token";
-import { createDevice } from "../services/devices";
-import { createUser, isEmailExist, getUserSalt } from "../services/users";
+import { createDevice, isExistDevice } from "../services/devices";
+import { createUser, isEmailExist, getUserSalt, isUserValid, getIdByEmail, isUserHasCode } from "../services/users";
 
 interface Ibcrypt {
     saltRounds: number,
@@ -55,12 +56,14 @@ export async function signIn(req: express.Request, res: express.Response) {
         if(isExists) {
 
             const userSalt: any = await getUserSalt(email);
-            console.log(userSalt);
-            //const saltPassword: string = password + bcryptInfo.globalSalt;
-            //const hashPassword: string = await bcrypt.hash(saltPassword, userSalt);
+            const saltPassword: string = password + bcryptInfo.globalSalt;
+            const hashPassword: string = await bcrypt.hash(saltPassword, userSalt);
 
-            if(isExists) {
-                //res.status(200).json({ token: await create({ hashPassword, email }) });
+            const isValid: boolean = await isUserValid(email, hashPassword);
+            const userId: number = await getIdByEmail(email);
+
+            if(isValid && userId) {
+                res.status(200).json({ token: await create({ userId }) });
             } else {
                 res.status(400).json({ error: "Email or password isn`t correct"});
             }
@@ -69,5 +72,34 @@ export async function signIn(req: express.Request, res: express.Response) {
         }
     } catch (e) {
         res.status(500).json({ error: `Can\`t signIn \n${ e }` });
+    }
+}
+
+export async function recoverUserPassword(req: express.Request, res: express.Response) {
+    try {
+        const { password, repeatPassword, code, email } = req.body;
+
+    } catch (e) {
+        res.status(500).json({ error: `Can\`t recover password \n${ e }` });
+    }
+}
+
+export async function registerDevice(req: express.Request, res: express.Response) {
+    try {
+        const { ip, browser, code, userId } = req.body;
+        const isValidCode: boolean = await isUserHasCode(userId, code);
+        const isUnique = await isExistDevice(userId, ip, browser);
+        if(isValidCode) {
+            if(ip && browser) {
+                await createDevice(ip, browser, userId);
+                res.status(200).json({ message: 'device is register' });
+            } else {
+                res.status(400).json({ error: 'invalid fields' });
+            }
+        } else {
+            res.status(400).json({ error: 'invalid code' });
+        }
+    } catch (e) {
+        res.status(500).json({ error: `Can\`t register device \n${ e }` });
     }
 }
