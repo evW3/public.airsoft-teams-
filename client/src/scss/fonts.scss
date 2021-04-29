@@ -1,0 +1,4 @@
+@import 'mixins/includeFont';
+
+@include includeFont('PTSansCaption', 'Regular');
+@include includeFont('PTSansCaption', 'Bold');

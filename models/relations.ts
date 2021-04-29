@@ -6,10 +6,10 @@ import { VerificationCodes } from './verificationCodes';
 Roles.hasOne(Users);
 Users.belongsTo(Roles);
 
-Users.hasMany(Devices);
+Users.hasMany(Devices, { onDelete: 'cascade' });
 Devices.belongsTo(Users);
 
-Users.hasMany(VerificationCodes);
+Users.hasMany(VerificationCodes, { onDelete: 'cascade' });
 VerificationCodes.belongsTo(Users);
 
 export {

@@ -40,3 +40,8 @@ export async function isUserHasCode(id: string, code: string): Promise<boolean> 
 export async function setUserPassword(id: number, password: string) {
     await Users.update({ password },{ where: { id } });
 }
+
+export async function isUserActivated(email: string): Promise<boolean> {
+    const user: any = await Users.findOne({ where: { email }, raw: true });
+    return user.activation;
+}

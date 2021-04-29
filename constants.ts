@@ -1,0 +1,1 @@
+export const ROLES: any = { PLAYER: "PLAYER", MANAGER: "MANAGER" };
