@@ -49,9 +49,7 @@ export async function add(req: express.Request, res: express.Response) {
 
                 await createDevice(req.ip, req?.headers['user-agent'], userId);
 
-                const token: string = await create({ userId });
-
-                res.status(200).json({ token });
+                res.status(200).json({ message: "user was created" });
             } else {
                 res.status(400).json({ error: "Incorrect query" });
             }
@@ -84,10 +82,10 @@ export async function signIn(req: express.Request, res: express.Response) {
                     res.status(400).json({ error: "Email or password isn`t correct"});
                 }
             } else {
-                res.status(400).json({ error: "Password field can`t be undefined"});
+                res.status(400).json({ error: "Your account is not activated yet"});
             }
         } else {
-            res.status(400).json({ error: "Your account is not activated yet" })
+            res.status(400).json({ error: "Can`t find user"})
         }
     } catch (e) {
         res.status(500).json({ error: `Can\`t signIn \n${ e }` });

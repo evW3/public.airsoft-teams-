@@ -23,6 +23,7 @@ b {
 
 a {
   color: #FFF;
+  text-decoration: none;
   cursor: pointer;
 }
 
@@ -70,11 +71,6 @@ input[type=number]::-webkit-inner-spin-button {
   justify-content: center;
   align-items: center;
 }
-
-.error-border { border: 2px solid $errorColor !important; }
-.error-bg { background-color: $errorColor !important; }
-.error-text { color: $errorColor !important; }
-.error-fill { fill: $errorColor !important; }
 
 .scroll-layout-content {
   width: 100%;

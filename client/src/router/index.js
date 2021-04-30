@@ -15,6 +15,12 @@ const router = createRouter({
             name: 'sign-in',
             component: () => import('../views/SignIn'),
             meta: { auth: false, layout: "empty" }
+        },
+        {
+            path: '/sign-up',
+            name: 'sign-up',
+            component: () => import('../views/SignUp'),
+            meta: { auth: false, layout: "empty" }
         }
     ],
 });

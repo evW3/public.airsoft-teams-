@@ -2,10 +2,10 @@ import { createStore } from 'vuex';
 import SignIn from './signIn';
 import Token from './token';
 import Notifications from './notifications';
+import ForgotPassword from "./forgotPassword";
 
 export const store = createStore({
     state: {
-        error: null,
         isLoading: null
     },
     getters: {
@@ -13,12 +13,9 @@ export const store = createStore({
         isLoading: s => s.isLoading
     },
     mutations: {
-        setError(state, error) {
-            state.error = error;
-        },
         setIsLoading(state, loading) {
             state.isLoading = loading;
         }
     },
-    modules: { SignIn, Token, Notifications }
+    modules: { SignIn, Token, Notifications, ForgotPassword }
 });

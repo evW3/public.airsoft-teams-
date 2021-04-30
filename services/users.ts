@@ -14,7 +14,8 @@ export async function isUserValid(email: string, password: string): Promise<bool
 }
 
 export async function getUserSalt(email: string) {
-    return await Users.findOne({ where: { email }, attributes: ['password_salt'], raw: true });
+    const user: any = await Users.findOne({ where: { email }, attributes: ['password_salt'], raw: true });
+    return user.password_salt;
 }
 
 export async function getEmailByUserId(id: number): Promise<string> {
