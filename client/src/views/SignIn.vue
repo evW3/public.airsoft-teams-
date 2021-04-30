@@ -1,6 +1,6 @@
 <template>
-    <div class="sign-in">`
-        <form @submit.prevent="onSubmit" class="form">
+    <div class="sign-in">
+        <form @submit.prevent=" isMessage = !isMessage" class="form">
             <div>
                 <div class="form__row">
                     <label for="email">Email</label>
@@ -24,26 +24,41 @@
                 </div>
                 <span class="form__text">Забыли пароль?</span>
                 <div class="form__block">
-                    <span class="form__text">Уже есть аккаунт?</span>
+                    <span class="form__text">Ещё нет аккаунта?</span>
                 </div>
-                <button type="submit">Войти</button>
+                <div class="form__block_b">
+                    <div class="form__img google" @click="test"/>
+                    <button type="submit">Войти</button>
+                </div>
             </div>
         </form>
     </div>
 </template>
 
 <script>
+    import NotificationMessage from "../components/NotificationMessage";
+    import { v4 as uuid } from 'uuid';
+
     export default {
         name: "SignIn",
+        components: {NotificationMessage},
         data: () => ({
             password: null,
-            email: null
+            email: null,
+            isMessage: false,
+            text: "Can`t recover password"
         }),
         methods: {
-            onSubmit() {
-                if(this.password.trim() && this.email.trim()) {
-
+            async onSubmit() {
+                const password = this.password.trim();
+                const email = this.email.trim()
+                if( password && email) {
+                    await this.$store.dispatch('signIn', { password, email });
                 }
+            },
+
+            test() {
+                this.$store.commit('pushNotification', { message: uuid().split('-')[0] });
             }
         }
     }
@@ -57,6 +72,7 @@
     }
     .form {
         display: flex;
+        height: 100vh;
         flex-direction: column;
         justify-content: center;
         align-items: center;
@@ -65,11 +81,11 @@
             flex-direction: column;
             justify-content: space-between;
             margin-bottom: 20px;
-            label {
+            & label {
                 margin-bottom: 5px;
                 display: block;
             }
-            input {
+            & input {
                 background-color: transparent!important;
                 color: white!important;
                 border: 0.5px solid white;
@@ -93,19 +109,34 @@
         &__block {
             display: flex;
             justify-content: flex-end;
+            &_b {
+                display: flex;
+                justify-content: space-between;
+            }
         }
-        button[type='submit'] {
+        &__img {
+            display: block;
+            width: 24px;
+            height: 35px;
+            cursor: pointer;
+        }
+        & button[type='submit'] {
             width: 100px;
             height: 35px;
             background-color: transparent;
             color: white;
             cursor: pointer;
             border: 0.5px solid white;
-            margin-left: calc(50% - 50px);
             &:hover {
                 color: black;
                 background-color: white;
             }
         }
+    }
+
+    .google {
+        background-image: url('../assets/imgs/icons/google.png');
+        background-repeat: no-repeat;
+        background-position: center;
     }
 </style>
