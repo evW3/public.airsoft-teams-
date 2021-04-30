@@ -8,6 +8,7 @@
                         type="text"
                         class="sign-in__input"
                         id="email"
+                        autocomplete="off"
                         placeholder="Введите email"
                         v-model="email"
                     >
@@ -18,6 +19,7 @@
                         type="password"
                         class="sign-in__input"
                         id="password"
+                        autocomplete="off"
                         placeholder="Введите пароль"
                         v-model="password"
                     >
