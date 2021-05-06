@@ -18,44 +18,9 @@ const tokenData: Itoken = config.get('token');
 
 const url: string = config.get('url');
 
-const deviceConfigure = async (userId: number, ip: string, browser: string) => {
-    const code: string = await createCode(userId);
-
-    const tokenToActivateDevice: string = jwt.sign(
-        { code, ip, browser, userId },
-        tokenData.codesKey,
-        { expiresIn: tokenData.codesExpiresIn }
-    );
-
-    const email: string = await getEmailByUserId(userId);
-
-    await sendSimpleMail(
-        `${ url }/register-device?token=${ tokenToActivateDevice }`,
-        "Register new device",
-        email
-    );
-}
-
-export async function sendRecoverToken(req: Request, res: Response) {
-    try {
-        const { email } = req.body;
-        const isExists: boolean = email && await isEmailExist(email);
-        if(isExists) {
-            const userId: number = await getIdByEmail(email);
-            const code: string = await createCode(userId);
-            const tokenToRecoverPassword: string = jwt.sign({ userId, code }, tokenData.codesKey, { expiresIn: tokenData.codesExpiresIn });
-            await sendSimpleMail(
-                `${ url }/recover-password?token=${ tokenToRecoverPassword }`,
-                "Recover user password",
-                email
-            );
-            res.status(200).json({ message: 'check email to recover password' });
-        } else {
-            res.status(400).json({ error: 'Can`t find user' });
-        }
-    } catch (e) {
-        res.status(500).json({ error: `Can\`t send recover token` });
-    }
+export async function codeToken(data: any) {
+    const code: string = await createCode(data.userId);
+    return jwt.sign({ ...data, code }, tokenData.codesKey, { expiresIn: tokenData.codesExpiresIn });
 }
 
 export async function create(user: object) {
@@ -84,7 +49,15 @@ export async function verify(req: Request, res: Response, next: NextFunction) {
                 req.body = { ...requestBody, userId: user.userId };
                 next();
             } else {
-                await deviceConfigure(user.userId, reqIp, reqBrowser);
+
+                const token = await codeToken({ userId: user.userId, ip: reqIp, browser: reqBrowser });
+                const email: string = await getEmailByUserId(user.userId);
+                await sendSimpleMail(
+                    `<a href="${ url }/register-device?token=${ token }">Activate device</a>`,
+                    "Register new device",
+                    email
+                );
+
                 res.status(403).json({
                     error: "device is not registered for this user, check email to registered it"
                 });
@@ -106,7 +79,6 @@ export async function codesVerify(req: Request, res: Response, next: NextFunctio
             const data: any = jwt.verify(token, tokenData.codesKey);
             if(data.code) {
                 req.body = { ...requestBody, ...data };
-                console.log("codesVerify BODY  ", req.body);
                 next();
             } else {
                 res.status(401).json({ error: 'incorrect recover token' });

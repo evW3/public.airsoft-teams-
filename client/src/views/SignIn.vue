@@ -5,7 +5,7 @@
                     <div class="form__row">
                         <label for="email">Email</label>
                         <input
-                            type="text"
+                            type="email"
                             class="sign-in__input"
                             id="email"
                             autocomplete="off"
@@ -19,6 +19,7 @@
                             type="password"
                             class="sign-in__input"
                             id="password"
+                            minlength="6"
                             autocomplete="off"
                             placeholder="Введите пароль"
                             v-model="password"

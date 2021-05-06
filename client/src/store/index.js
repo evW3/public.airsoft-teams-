@@ -1,8 +1,9 @@
 import { createStore } from 'vuex';
-import SignIn from './signIn';
+import Auth from './auth';
 import Token from './token';
 import Notifications from './notifications';
 import ForgotPassword from "./forgotPassword";
+import Codes from "./codes";
 
 export const store = createStore({
     state: {
@@ -17,5 +18,5 @@ export const store = createStore({
             state.isLoading = loading;
         }
     },
-    modules: { SignIn, Token, Notifications, ForgotPassword }
+    modules: { Auth, Token, Notifications, ForgotPassword, Codes }
 });

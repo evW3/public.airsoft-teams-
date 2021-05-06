@@ -1,18 +1,11 @@
 <template>
     <div class="sign-in">
-        <form @submit.prevent="onSubmit" class="form">
+        <form
+            @submit.prevent="onSubmit"
+            class="form"
+            v-if="isAccepted === null"
+        >
             <div>
-                <div class="form__row">
-                    <label for="email">Email</label>
-                    <input
-                        type="email"
-                        class="sign-in__input"
-                        id="email"
-                        autocomplete="off"
-                        placeholder="Введите email"
-                        v-model="email"
-                    >
-                </div>
                 <div class="form__row">
                     <label for="password">Пароль</label>
                     <input
@@ -37,68 +30,57 @@
                         v-model="repeatPassword"
                     >
                 </div>
-                <div class="form__row_d">
-                    <label for="player" :class="{ 'form__radio_a': 'PLAYER' === role }">Игрок</label>
-                    <input
-                        type="radio"
-                        class="form__radio"
-                        id="player"
-                        value="PLAYER"
-                        v-model="role"
-                    >
-                    <label for="manager" :class="{ 'form__radio_a': 'MANAGER' === role }">Менеджер</label>
-                    <input
-                        type="radio"
-                        class="form__radio"
-                        id="manager"
-                        value="MANAGER"
-                        v-model="role"
-                    >
-                </div>
-                <router-link
-                    class="form__text"
-                    @click="isOpen = true"
-                    to="/sign-in"
-                >Уже есть аккаунт?</router-link>
                 <div class="form__block_b">
-                    <div class="form__img google" />
-                    <button type="submit">Зарегистрироваться</button>
+                    <button type="submit">Изменить пароль</button>
                 </div>
             </div>
         </form>
+        <Loader v-else-if="isLoading"/>
+        <AcceptDecline :isAccepted="isAccepted" v-else-if="isAccepted !== null" />
     </div>
 </template>
 
 <script>
-    import NotificationMessage from "../components/NotificationMessage";
-    import ForgotPassword from "../components/modals/ForgotPassword";
+    import AcceptDecline from "../components/AcceptDecline";
+    import Loader from "../components/Loader";
+    import { mapGetters } from "vuex";
 
     export default {
         name: "SignUp",
         data: () => ({
             password: null,
             repeatPassword: null,
-            email: null,
-            role: 'PLAYER',
+            token: null,
+            isAccepted: null
         }),
+        beforeMount() {
+            this.token = this.$route.query.token;
+        },
+        computed: {
+            ...mapGetters(['isLoading'])
+        },
         methods: {
             async onSubmit() {
                 const password = this.password.trim();
-                const email = this.email.trim();
-                const role = this.role.trim();
                 const repeatPassword = this.repeatPassword.trim();
-                if(password && email && role && repeatPassword) {
+                if(password && repeatPassword) {
                     if(repeatPassword === password) {
                         try {
-                             await this.$store.dispatch('signUp', { password, repeatPassword, email, role });
-                        } catch (e) {  }
+                            this.$store.commit('setIsLoading', true);
+                            await this.$store.dispatch('sendRecoverCode', { password, repeatPassword, token: this.token });
+                            this.isAccepted = true;
+                            this.$store.commit('setIsLoading', false);
+                        } catch (e) {
+                            this.isAccepted = false;
+                            this.$store.commit('setIsLoading', false);
+                        }
                     } else {
                         this.$store.commit('pushNotification', { message: "Password mismatch" });
                     }
                 }
             },
         },
-        components: { NotificationMessage, ForgotPassword }
+        components: { Loader, AcceptDecline }
     }
 </script>
 
@@ -107,6 +89,9 @@
         width: 100%;
         height: 100vh;
         user-select: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         background-color: black;
     }
     .form {
@@ -158,7 +143,7 @@
             justify-content: flex-end;
             &_b {
                 display: flex;
-                justify-content: space-between;
+                justify-content: center;
             }
         }
         &__img {

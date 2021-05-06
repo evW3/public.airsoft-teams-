@@ -21,6 +21,18 @@ const router = createRouter({
             name: 'sign-up',
             component: () => import('../views/SignUp'),
             meta: { auth: false, layout: "empty" }
+        },
+        {
+            path: '/register-device',
+            name: 'register-device',
+            component: () => import('../views/RegisterDevice'),
+            meta: { auth: false, layout: "empty" }
+        },
+        {
+            path: '/forgot-password',
+            name: 'forgot-password',
+            component: () => import('../views/ForgotPassword'),
+            meta: { auth: false, layout: "empty" }
         }
     ],
 });

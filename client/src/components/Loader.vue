@@ -20,15 +20,15 @@
             left: 8px;
             width: 16px;
             background: #fff;
-            animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
+            animation: lds-facebook 1.2s cubic-bezier(0, .5, .5, 1) infinite;
         }
         & div:nth-child(1) {
             left: 8px;
-            animation-delay: -0.24s;
+            animation-delay: -.24s;
         }
         & div:nth-child(2) {
             left: 32px;
-            animation-delay: -0.12s;
+            animation-delay: -.12s;
         }
         & div:nth-child(3) {
             left: 56px;

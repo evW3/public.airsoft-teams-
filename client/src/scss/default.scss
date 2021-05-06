@@ -91,6 +91,22 @@ input[type=number]::-webkit-inner-spin-button {
   }
 }
 
+.decline, .accept {
+  width: 500px;
+  height: 500px;
+  -webkit-background-size: 500px 500px;
+  background-size: 500px 500px;
+  background-position: center;
+}
+
+.decline {
+  background-image: url('../assets/imgs/icons/decline.svg');
+}
+
+.accept {
+  background-image: url('../assets/imgs/icons/accept.svg');
+}
+
 @media (max-width: 280px) {
   #app {
     display: none;

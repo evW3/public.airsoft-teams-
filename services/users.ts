@@ -1,4 +1,4 @@
-import { Users, VerificationCodes } from "../models/relations";
+import {Roles, Users, VerificationCodes} from "../models/relations";
 
 export async function createUser(user: object): Promise<number> {
     const info: any = await Users.create(user);
@@ -38,11 +38,12 @@ export async function isUserHasCode(id: string, code: string): Promise<boolean> 
     }) !== 0;
 }
 
-export async function setUserPassword(id: number, password: string) {
-    await Users.update({ password },{ where: { id } });
+export async function setUserPassword(id: number, password: string, password_salt: string) {
+    await Users.update({ password, password_salt },{ where: { id } });
 }
 
 export async function isUserActivated(email: string): Promise<boolean> {
     const user: any = await Users.findOne({ where: { email }, raw: true });
     return user.activation;
 }
+
