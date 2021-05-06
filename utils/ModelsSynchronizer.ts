@@ -18,6 +18,7 @@ export class ModelsSynchronizer {
         await Permissions.bulkCreate(permissions);
     }
 
+    //Костыль раскрытать на свой страх и риск
     private async initRolePermissions() {
         const roles = await Roles.findAll({ raw: true });
         let rolePermissions = [];
@@ -39,12 +40,36 @@ export class ModelsSynchronizer {
                 PermissionsList.admin.forEach(
                     (adminPermission: any) => {
                         if(adminPermission.name === item.name) {
-                            rolePermissions.push({ roleId: adminIdx,  })
+                            rolePermissions.push({ roleId: adminIdx, permissionId: item.id });
                         }
                     }
                 )
             }
-        )
+        );
+
+        permissions.forEach(
+            (item: any) => {
+                PermissionsList.manager.forEach(
+                    (adminPermission: any) => {
+                        if(adminPermission.name === item.name) {
+                            rolePermissions.push({ roleId: managerIdx, permissionId: item.id });
+                        }
+                    }
+                )
+            }
+        );
+
+        permissions.forEach(
+            (item: any) => {
+                PermissionsList.player.forEach(
+                    (adminPermission: any) => {
+                        if(adminPermission.name === item.name) {
+                            rolePermissions.push({ roleId: playerIdx, permissionId: item.id });
+                        }
+                    }
+                )
+            }
+        );
     }
 
     private getUniquePermissions(permissions: any) {
