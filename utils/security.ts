@@ -1,6 +1,5 @@
 import bcrypt from "bcrypt";
 import config from "config";
-import {getUserSalt} from "../services/users";
 
 interface Ibcrypt {
     saltRounds: number,

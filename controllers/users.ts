@@ -2,7 +2,7 @@ import * as express from "express";
 import config from "config";
 
 import { ROLES } from "../constants";
-import { create } from "../middleware/Token";
+import { create } from "../middleware/token";
 import { getRoleIdByName, getUserRole } from "../services/roles";
 import { createDevice, isExistDevice,  } from "../services/devices";
 import { clearUserCodes } from "../services/verificationCodes";
@@ -17,7 +17,7 @@ import {
     isUserActivated
 } from "../services/users";
 import { sendSimpleMail } from "../utils/smtp";
-import { codeToken } from "../middleware/Token";
+import { codeToken } from "../middleware/token";
 import { encrypt, encryptBySalt } from "../utils/security";
 
 const url: string = config.get('url');
@@ -67,7 +67,7 @@ export async function signIn(req: express.Request, res: express.Response) {
         const isExists: boolean = password && email && (await isEmailExist(email));
         if(isExists) {
             const isActivation: boolean = await isUserActivated(email);
-            const role: string = await getUserRole(email);
+            const role: string = await getUserRole({ email });
 
             if(role !== 'MANAGER' || isActivation) {
 
@@ -89,6 +89,7 @@ export async function signIn(req: express.Request, res: express.Response) {
             res.status(400).json({ error: "Can`t find user"})
         }
     } catch (e) {
+        console.log(e);
         res.status(500).json({ error: `Can\`t signIn \n${ e }` });
     }
 }

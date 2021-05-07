@@ -1,6 +1,7 @@
 import { sequelize } from './BaseDB';
-import { Roles, Permissions, RolePermissions } from '../models/relations';
+import { Roles, Permissions, RolePermissions, Users } from '../models/relations';
 import { PermissionsList } from '../constants';
+import { encrypt } from "./security";
 
 export class ModelsSynchronizer {
     private async log(sequelize: any) {
@@ -18,10 +19,9 @@ export class ModelsSynchronizer {
         await Permissions.bulkCreate(permissions);
     }
 
-    //Костыль раскрытать на свой страх и риск
     private async initRolePermissions() {
         const roles = await Roles.findAll({ raw: true });
-        let rolePermissions = [];
+        let rolePermissions: any = [];
         const permissions: any = await Permissions.findAll({ raw: true });
         let adminIdx:any;
         let managerIdx:any;
@@ -70,6 +70,22 @@ export class ModelsSynchronizer {
                 )
             }
         );
+
+        await RolePermissions.bulkCreate(rolePermissions);
+    }
+
+    private async createAdmin() {
+        const email = "byruk228i@gmail.com";
+        await Users.destroy({ where: { email } });
+        const roles: any = await Roles.findOne({ where: { name: "ADMIN" }, attributes:['id'] })
+        const encryptData = await encrypt('test');
+        await Users.create({
+            email,
+            activation: true,
+            password: encryptData.strongPassword,
+            password_salt: encryptData.salt,
+            roleId: roles.id
+        });
     }
 
     private getUniquePermissions(permissions: any) {
@@ -89,11 +105,11 @@ export class ModelsSynchronizer {
         }
 
         for(let k = 0; k < repeatPermissions.length; k++) {
-            if(!uniquePermissions.includes(k)) {
+            if(!repeatPermissionsIdx.includes(k)) {
                 uniquePermissions.push(repeatPermissions[k]);
             }
         }
-        console.log('uniquePermissions', uniquePermissions);
+
         return uniquePermissions;
     }
 
@@ -102,8 +118,9 @@ export class ModelsSynchronizer {
             await sequelize.authenticate();
             await sequelize.sync();
             //await this.initRoles();
+            //await this.createAdmin();
             //await this.initPermissions();
-            await this.initRolePermissions();
+            //await this.initRolePermissions();
             await this.log(sequelize);
         } catch (e) {
             console.log('[DB]: Failed connection to DB!');

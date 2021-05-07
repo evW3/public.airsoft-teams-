@@ -47,3 +47,14 @@ export async function isUserActivated(email: string): Promise<boolean> {
     return user.activation;
 }
 
+export async function changeActivation(id: number, activation: boolean) {
+    await Users.update({ activation }, { where: { id } });
+}
+
+export async function getUsersByRole(role: string) {
+    return await Users.findAll({
+        include: { model: Roles, where: { name: role }, attributes:[] },
+        attributes: ['email', ],
+        raw: true });
+}
+
