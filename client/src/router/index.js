@@ -11,6 +11,12 @@ const router = createRouter({
             meta: { auth: true, layout: "base" }
         },
         {
+            path: "/profile",
+            name: "Profile",
+            component: () => import("../views/Profile"),
+            meta: { auth: false, layout: "base" }
+        },
+        {
             path: '/sign-in',
             name: 'sign-in',
             component: () => import('../views/SignIn'),

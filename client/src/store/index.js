@@ -4,7 +4,7 @@ import Token from './token';
 import Notifications from './notifications';
 import ForgotPassword from "./forgotPassword";
 import Codes from "./codes";
-import Profile from "../views/Profile";
+import Profile from "./Profile";
 
 export const store = createStore({
     state: {

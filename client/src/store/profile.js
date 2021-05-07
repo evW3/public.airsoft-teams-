@@ -5,11 +5,17 @@ export default {
     state: {
         user: {}
     },
+    getters: { user: s => s.user },
+    mutations: {
+        setUser(state, user) {
+            state.user = user;
+        }
+    },
     actions: {
-        async initUser() {
+        async initUser({ commit, dispatch }, token) {
             try {
-                console.log(await this.getters.token);
-                //const response = await get(`${ API_URL }/users/profile`);
+                const response = await get(`${ API_URL }/users/profile`, { headers: { Authorization: `Bearer ${ token }` } });
+                commit('setUser', response.data.user);
             } catch (e) {  }
         }
     }

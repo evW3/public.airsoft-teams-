@@ -13,11 +13,11 @@ export default {
             localStorage.removeItem('token');
         }
     },
-    action: {
-        tokenInit({ commit, dispatch }) {
+    actions: {
+        initToken({ commit, dispatch }) {
             const token = localStorage.getItem('token');
             if(token) {
-                this.state.token = token;
+                commit('setToken', token);
             }
         }
     }

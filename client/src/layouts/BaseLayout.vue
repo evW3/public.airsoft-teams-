@@ -25,8 +25,8 @@
                 { name: "Profile", to: "/profile", icon: '' }
             ]
         }),
-        beforeMount() {
-
+        async beforeMount() {
+            this.$store.dispatch("initToken");
         }
     }
 </script>
