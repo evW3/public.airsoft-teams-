@@ -117,10 +117,10 @@ export class ModelsSynchronizer {
         try {
             await sequelize.authenticate();
             await sequelize.sync();
-            //await this.initRoles();
-            //await this.createAdmin();
-            //await this.initPermissions();
-            //await this.initRolePermissions();
+            // await this.initRoles();
+            // await this.createAdmin();
+            // await this.initPermissions();
+            // await this.initRolePermissions();
             await this.log(sequelize);
         } catch (e) {
             console.log('[DB]: Failed connection to DB!');

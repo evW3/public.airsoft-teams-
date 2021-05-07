@@ -1,4 +1,5 @@
 import { sequelize, DataTypes } from '../utils/BaseDB';
+import { v4 as uuidv4 } from 'uuid';
 
 const Users = sequelize.define('users', {
     id: {
@@ -14,6 +15,10 @@ const Users = sequelize.define('users', {
     },
     password_salt: {
         type: DataTypes.STRING
+    },
+    login: {
+        type: DataTypes.STRING,
+        defaultValue: uuidv4().split("-")[0]
     },
     profile_image: {
         type: DataTypes.STRING

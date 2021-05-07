@@ -26,7 +26,7 @@
         position: fixed;
         background-color: transparent;
         right: 0;
-        height: 100vh;
+        bottom: 0;
         min-width: 150px;
         display: flex;
         flex-direction: column;

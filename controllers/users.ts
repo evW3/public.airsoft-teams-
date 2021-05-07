@@ -1,11 +1,15 @@
 import * as express from "express";
 import config from "config";
+import formidable from "formidable"
 
 import { ROLES } from "../constants";
 import { create } from "../middleware/token";
 import { getRoleIdByName, getUserRole } from "../services/roles";
 import { createDevice, isExistDevice,  } from "../services/devices";
 import { clearUserCodes } from "../services/verificationCodes";
+import { sendSimpleMail } from "../utils/smtp";
+import { codeToken } from "../middleware/token";
+import { encrypt, encryptBySalt } from "../utils/security";
 import {
     createUser,
     isEmailExist,
@@ -14,11 +18,9 @@ import {
     getIdByEmail,
     isUserHasCode,
     setUserPassword,
-    isUserActivated
+    isUserActivated,
+    getUserInfo
 } from "../services/users";
-import { sendSimpleMail } from "../utils/smtp";
-import { codeToken } from "../middleware/token";
-import { encrypt, encryptBySalt } from "../utils/security";
 
 const url: string = config.get('url');
 
@@ -160,5 +162,30 @@ export async function registerDevice(req: express.Request, res: express.Response
         }
     } catch (e) {
         res.status(500).json({ error: `Can\`t register device \n${ e }` });
+    }
+}
+
+export async function getUserProfile(req: express.Request, res: express.Response) {
+    try {
+        const { userId } = req.body;
+        res.status(200).json({ user: await getUserInfo(userId) });
+    } catch (e) {
+        res.status(500).json({ error: `Can\`t get user profile \n${ e }` });
+    }
+}
+
+export async function updateUserProfile(req: express.Request, res: express.Response) {
+    try {
+        const form = new formidable({ multiples: true });
+        form.parse(req, (err, fields, files) => {
+            if (err) {
+                console.log(fields, files);
+                res.status(400).json({ error: err });
+                return;
+            }
+            res.status(200).json({ message: "Files are upload successfully" });
+        });
+    } catch (e) {
+        res.status(500).json({ error: `Can\`t update user profile \n${ e }` });
     }
 }

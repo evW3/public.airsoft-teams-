@@ -58,3 +58,11 @@ export async function getUsersByRole(role: string) {
         raw: true });
 }
 
+export async function getUserInfo(id: number) {
+    return await Users.findOne({
+        where: { id },
+        attributes: ['email', 'login', 'profile_image'],
+        include: { model: Roles, attributes: ['name'] }
+    });
+}
+

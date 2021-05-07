@@ -6,6 +6,8 @@
 
 <script>
     import EmptyLayout from "./layouts/EmptyLayout";
+    import BaseLayout from "./layouts/BaseLayout";
+
     export default {
         computed: {
             layout() {
@@ -13,7 +15,8 @@
             }
         },
         components: {
-            EmptyLayout
+            EmptyLayout,
+            BaseLayout
         }
     };
 </script>

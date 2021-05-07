@@ -83,14 +83,15 @@
         }),
         methods: {
             async onSubmit() {
-                const password = this.password.trim();
-                const email = this.email.trim();
-                const role = this.role.trim();
-                const repeatPassword = this.repeatPassword.trim();
+                const password = this.password?.trim();
+                const email = this.email?.trim();
+                const role = this.role?.trim();
+                const repeatPassword = this.repeatPassword?.trim();
                 if(password && email && role && repeatPassword) {
                     if(repeatPassword === password) {
                         try {
                              await this.$store.dispatch('signUp', { password, repeatPassword, email, role });
+                             await this.$router.push('/sign-in');
                         } catch (e) {  }
                     } else {
                         this.$store.commit('pushNotification', { message: "Password mismatch" });

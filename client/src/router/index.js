@@ -8,7 +8,7 @@ const router = createRouter({
             path: '/',
             name: 'Home',
             component: () => import('../views/Home'),
-            meta: { auth: true, layout: "main" }
+            meta: { auth: true, layout: "base" }
         },
         {
             path: '/sign-in',
@@ -32,6 +32,12 @@ const router = createRouter({
             path: '/forgot-password',
             name: 'forgot-password',
             component: () => import('../views/ForgotPassword'),
+            meta: { auth: false, layout: "empty" }
+        },
+        {
+            path: '/:pathMatch(.*)*',
+            name: 'not-found',
+            component: () => import('../components/PageNotFound'),
             meta: { auth: false, layout: "empty" }
         }
     ],

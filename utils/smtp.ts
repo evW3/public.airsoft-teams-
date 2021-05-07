@@ -22,7 +22,7 @@ export async function sendSimpleMail(text: string, subject: string, to: string) 
             from: smtpData.email,
             to,
             subject,
-            text
+            html: text
         });
     } catch (e) {
         console.log('[ERROR] can`t send message: ', e);

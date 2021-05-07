@@ -1,5 +1,5 @@
 import { API_URL } from '../constants';
-import { post } from 'axios';
+import { put, post } from 'axios';
 
 export default {
     actions: {
@@ -19,7 +19,7 @@ export default {
             if(user) {
                 try {
                     commit('setIsLoading', true);
-                    const response = (await post(`${ API_URL }/users/sign-up`,
+                    const response = (await put(`${ API_URL }/users/sign-up`,
                         {
                             email: user.email,
                             password: user.password,
