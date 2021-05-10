@@ -1,8 +1,8 @@
-import {Roles, Users, VerificationCodes} from "../models/relations";
+import { Roles, Users, VerificationCodes } from "../models/relations";
 
 export async function createUser(user: object): Promise<number> {
-    const info: any = await Users.create(user);
-    return info.getDataValue("id");
+    const userInfo = await Users.create(user);
+    return userInfo.id;
 }
 
 export async function isEmailExist(email: string): Promise<boolean> {
@@ -13,18 +13,24 @@ export async function isUserValid(email: string, password: string): Promise<bool
     return await Users.count({ where: { email, password } }) !== 0;
 }
 
-export async function getUserSalt(email: string) {
-    const user: any = await Users.findOne({ where: { email }, attributes: ['password_salt'], raw: true });
+export async function getUserSalt(email: string): Promise<string | null> {
+    const user = await Users.findOne({ where: { email }, attributes: ['password_salt'], raw: true });
+    if(!user)
+        return null;
     return user.password_salt;
 }
 
-export async function getEmailByUserId(id: number): Promise<string> {
-    const user: any = await Users.findOne({ where: { id }, raw: true,  attributes: ['email'] });
+export async function getEmailByUserId(id: number): Promise<string | null> {
+    const user = await Users.findOne({ where: { id }, raw: true,  attributes: ['email'] });
+    if(!user)
+        return null;
     return user.email;
 }
 
-export async function getIdByEmail(email: string): Promise<number> {
-    const user: any = await Users.findOne({ where: { email }, raw: true, attributes: ['id'] });
+export async function getIdByEmail(email: string): Promise<number | null> {
+    const user = await Users.findOne({ where: { email }, raw: true, attributes: ['id'] });
+    if(!user)
+        return null;
     return user.id;
 }
 
@@ -42,8 +48,10 @@ export async function setUserPassword(id: number, password: string, password_sal
     await Users.update({ password, password_salt },{ where: { id } });
 }
 
-export async function isUserActivated(email: string): Promise<boolean> {
-    const user: any = await Users.findOne({ where: { email }, raw: true });
+export async function isUserActivated(email: string): Promise<boolean | null> {
+    const user = await Users.findOne({ where: { email }, raw: true });
+    if(!user)
+        return null;
     return user.activation;
 }
 

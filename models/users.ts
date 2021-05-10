@@ -1,7 +1,8 @@
 import { sequelize, DataTypes } from '../utils/BaseDB';
 import { v4 as uuidv4 } from 'uuid';
+import { IUsers } from "../utils/interfaces";
 
-const Users = sequelize.define('users', {
+const Users = sequelize.define<IUsers>("users", {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
@@ -27,9 +28,10 @@ const Users = sequelize.define('users', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     }
-}, {
-    timestamps: false,
-    freezeTableName: true,
-});
+},{
+        freezeTableName: true,
+        timestamps: false,
+    }
+);
 
 export { Users };

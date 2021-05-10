@@ -1,12 +1,8 @@
 import bcrypt from "bcrypt";
 import config from "config";
+import { IBcrypt } from "./interfaces";
 
-interface Ibcrypt {
-    saltRounds: number,
-    globalSalt: string
-}
-
-const bcryptInfo: Ibcrypt = config.get('security');
+const bcryptInfo: IBcrypt = config.get('security');
 
 export async function encrypt(weakPassword: string) {
     const salt: string = await bcrypt.genSalt(bcryptInfo.saltRounds);

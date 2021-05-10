@@ -1,6 +1,7 @@
 import { sequelize, DataTypes } from '../utils/BaseDB';
+import { IDevices } from "../utils/interfaces";
 
-const Devices = sequelize.define('devices', {
+const Devices = sequelize.define<IDevices>("devices", {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,

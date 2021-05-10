@@ -1,10 +1,7 @@
 import config from "config";
 import nodemailer from "nodemailer";
 
-interface ISMTP {
-    email: string,
-    password: string
-}
+import { ISMTP } from "./interfaces";
 
 const smtpData: ISMTP = config.get('smtp');
 

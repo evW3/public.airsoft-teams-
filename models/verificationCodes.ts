@@ -1,7 +1,8 @@
 import { sequelize, DataTypes } from '../utils/BaseDB';
 import { v4 as uuidv4 } from 'uuid';
+import { IVerificationCodes } from "../utils/interfaces";
 
-const VerificationCodes = sequelize.define('verification_codes', {
+const VerificationCodes = sequelize.define<IVerificationCodes>("verification_codes", {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,

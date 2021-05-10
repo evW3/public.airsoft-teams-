@@ -1,9 +1,8 @@
 import { VerificationCodes } from "../models/relations";
-import exp from "constants";
 
 export async function createCode(userId: number): Promise<string> {
-    const codeUUID: any = await VerificationCodes.create({ userId });
-    return codeUUID.getDataValue('code');
+    const verificationCode = await VerificationCodes.create({ userId });
+    return verificationCode.code;
 }
 
 export async function clearUserCodes(userId: number) {

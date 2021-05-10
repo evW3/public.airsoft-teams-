@@ -40,18 +40,19 @@ export async function signUp(req: express.Request, res: express.Response) {
 
                 const encryptData = await encrypt(password);
 
-                const roleId: number = await getRoleIdByName(roleName);
-
-                const userId: number = await createUser({
-                    password: encryptData.strongPassword,
-                    password_salt: encryptData.salt,
-                    email,
-                    roleId
-                });
-
-                await createDevice(req.ip, req?.headers['user-agent'], userId);
-
-                res.status(200).json({ message: "user was created" });
+                const roleId: number | null = await getRoleIdByName(roleName);
+                if(roleId) {
+                    const userId: number = await createUser({
+                        password: encryptData.strongPassword,
+                        password_salt: encryptData.salt,
+                        email,
+                        roleId
+                    });
+                    if(userId) {
+                        await createDevice(req.ip, req?.headers['user-agent'], userId);
+                        res.status(200).json({ message: "user was created" });
+                    }
+                }
             } else {
                 res.status(400).json({ error: "Incorrect query" });
             }
@@ -68,21 +69,23 @@ export async function signIn(req: express.Request, res: express.Response) {
         const { password, email } = req.body;
         const isExists: boolean = password && email && (await isEmailExist(email));
         if(isExists) {
-            const isActivation: boolean = await isUserActivated(email);
-            const role: string = await getUserRole({ email });
+            const isActivation: boolean | null = await isUserActivated(email);
+            const role: string | null = await getUserRole({ email });
 
             if(role !== 'MANAGER' || isActivation) {
 
-                const userSalt: any = await getUserSalt(email);
-                const strongPassword: string = await encryptBySalt(password, userSalt);
+                const userSalt: string | null = await getUserSalt(email);
+                if(userSalt) {
+                    const strongPassword: string = await encryptBySalt(password, userSalt);
 
-                const isValid: boolean = await isUserValid(email, strongPassword);
-                const userId: number = await getIdByEmail(email);
+                    const isValid: boolean = await isUserValid(email, strongPassword);
+                    const userId: number | null = await getIdByEmail(email);
 
-                if(isValid && userId) {
-                    res.status(200).json({ token: await create({ userId }) });
-                } else {
-                    res.status(400).json({ error: "Email or password isn`t correct"});
+                    if(isValid && userId) {
+                        res.status(200).json({ token: await create({ userId }) });
+                    } else {
+                        res.status(400).json({ error: "Email or password isn`t correct"});
+                    }
                 }
             } else {
                 res.status(400).json({ error: "Your account is not activated yet"});
@@ -124,14 +127,16 @@ export async function sendRecoverToken(req: express.Request, res: express.Respon
         const { email } = req.body;
         const isExists: boolean = email && await isEmailExist(email);
         if(isExists) {
-            const userId: number = await getIdByEmail(email);
-            const tokenToRecoverPassword: string = await codeToken({ userId });
-            await sendSimpleMail(
-                `<a href="${ url }/forgot-password?token=${ tokenToRecoverPassword }">Change password</a>`,
-                "Recover user password",
-                email
-            );
-            res.status(200).json({ message: 'check email to recover password' });
+            const userId: number | null = await getIdByEmail(email);
+            if(userId) {
+                const tokenToRecoverPassword: string = await codeToken(userId, null);
+                await sendSimpleMail(
+                    `<a href="${ url }/forgot-password?token=${ tokenToRecoverPassword }">Change password</a>`,
+                    "Recover user password",
+                    email
+                );
+                res.status(200).json({ message: 'check email to recover password' });
+            }
         } else {
             res.status(400).json({ error: 'Can`t find user' });
         }

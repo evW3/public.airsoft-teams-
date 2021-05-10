@@ -1,13 +1,6 @@
 import config from 'config';
-import { Sequelize, DataTypes, Op } from 'sequelize';
-
-interface IDatabase {
-    name: string,
-    port: number,
-    host: string,
-    login: string,
-    password: string
-}
+import { Sequelize, DataTypes, Op, Model } from 'sequelize';
+import { IDatabase } from './interfaces';
 
 const database: IDatabase = config.get('db');
 
@@ -15,4 +8,4 @@ let sequelize = new Sequelize(`postgres://${database.login}:${database.password}
     logging: false
 });
 
-export { sequelize, DataTypes, Op };
+export { sequelize, DataTypes, Op, Model };

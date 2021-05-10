@@ -10,5 +10,3 @@ adminRoute.get("/managers", verify, checkPermission, getManagersInfo);
 adminRoute.get("/managers/:id", verify, checkPermission, getManagersInfo);
 
 export { adminRoute };
-
-

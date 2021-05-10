@@ -2,9 +2,16 @@ import { sequelize } from './BaseDB';
 import { Roles, Permissions, RolePermissions, Users } from '../models/relations';
 import { PermissionsList } from '../constants';
 import { encrypt } from "./security";
+import {Sequelize} from "sequelize";
+
+interface IRolesPermission {
+    roleId: number,
+    permissionId: number
+}
+
 
 export class ModelsSynchronizer {
-    private async log(sequelize: any) {
+    private async log(sequelize: Sequelize) {
         Object.keys(sequelize.models).map(modelName => console.log(`[DB]: Model "${ modelName }" were synchronized!`));
     }
 
@@ -21,7 +28,7 @@ export class ModelsSynchronizer {
 
     private async initRolePermissions() {
         const roles = await Roles.findAll({ raw: true });
-        let rolePermissions: any = [];
+        let rolePermissions: IRolesPermission[] = [];
         const permissions: any = await Permissions.findAll({ raw: true });
         let adminIdx:any;
         let managerIdx:any;
@@ -115,15 +122,16 @@ export class ModelsSynchronizer {
 
     async syncAll() {
         try {
+            //await this.removeAll();
             await sequelize.authenticate();
             await sequelize.sync();
-            // await this.initRoles();
-            // await this.createAdmin();
-            // await this.initPermissions();
-            // await this.initRolePermissions();
+            await this.initRoles();
+            await this.createAdmin();
+            await this.initPermissions();
+            await this.initRolePermissions();
             await this.log(sequelize);
         } catch (e) {
-            console.log('[DB]: Failed connection to DB!');
+            console.log(e);
         }
     }
 
