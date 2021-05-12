@@ -1,14 +1,8 @@
-export const ROLES: any = { PLAYER: "PLAYER", MANAGER: "MANAGER" };
+import { IKeyValue, IRolesConstant } from "./utils/interfaces";
 
-export const PermissionsList: any = {
-    admin: [
-        {
-            name: "/api/admins/activate-manager"
-        },
-        {
-            name: "/api/admins/managers"
-        }
-    ],
-    manager: [],
-    player: []
+export const ROLES: IRolesConstant = { PLAYER: "PLAYER", MANAGER: "MANAGER" };
+
+export const PermissionsList: IKeyValue = {
+    activateManager: [ 'ADMIN' ],
+    getManagers: [ 'ADMIN' ]
 }

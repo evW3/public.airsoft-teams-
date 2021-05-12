@@ -71,3 +71,12 @@ export interface IVerificationCodes extends Model {
     id: number;
     code: string;
 }
+
+export interface IKeyValue {
+    [key: string]: string[]
+}
+
+export interface IRolesConstant {
+    PLAYER: string,
+    MANAGER: string
+}

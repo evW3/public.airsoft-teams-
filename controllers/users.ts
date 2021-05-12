@@ -18,7 +18,6 @@ import {
     getIdByEmail,
     isUserHasCode,
     setUserPassword,
-    isUserActivated,
     getUserInfo
 } from "../services/users";
 
@@ -26,10 +25,10 @@ const url: string = config.get('url');
 
 export async function signUp(req: express.Request, res: express.Response) {
     try {
-        const { password, repeatPassword, email, role } = req.body;
+        const { password, repeatPassword, email } = req.body;
         const isUnique: boolean = email && !(await isEmailExist(email));
-        const roleName = role && ROLES[role];
-        if(isUnique && roleName) {
+        const roleName = "PLAYER";
+        if(isUnique) {
             if(
                 password &&
                 repeatPassword &&
@@ -50,7 +49,7 @@ export async function signUp(req: express.Request, res: express.Response) {
                     });
                     if(userId) {
                         await createDevice(req.ip, req?.headers['user-agent'], userId);
-                        res.status(200).json({ message: "user was created" });
+                        res.status(200).json({ token: await create({ userId }) });
                     }
                 }
             } else {
@@ -69,26 +68,18 @@ export async function signIn(req: express.Request, res: express.Response) {
         const { password, email } = req.body;
         const isExists: boolean = password && email && (await isEmailExist(email));
         if(isExists) {
-            const isActivation: boolean | null = await isUserActivated(email);
-            const role: string | null = await getUserRole({ email });
+            const userSalt: string | null = await getUserSalt(email);
+            if(userSalt) {
+                const strongPassword: string = await encryptBySalt(password, userSalt);
 
-            if(role !== 'MANAGER' || isActivation) {
+                const isValid: boolean = await isUserValid(email, strongPassword);
+                const userId: number | null = await getIdByEmail(email);
 
-                const userSalt: string | null = await getUserSalt(email);
-                if(userSalt) {
-                    const strongPassword: string = await encryptBySalt(password, userSalt);
-
-                    const isValid: boolean = await isUserValid(email, strongPassword);
-                    const userId: number | null = await getIdByEmail(email);
-
-                    if(isValid && userId) {
-                        res.status(200).json({ token: await create({ userId }) });
-                    } else {
-                        res.status(400).json({ error: "Email or password isn`t correct"});
-                    }
+                if(isValid && userId) {
+                    res.status(200).json({ token: await create({ userId }) });
+                } else {
+                    res.status(400).json({ error: "Email or password isn`t correct"});
                 }
-            } else {
-                res.status(400).json({ error: "Your account is not activated yet"});
             }
         } else {
             res.status(400).json({ error: "Can`t find user"})

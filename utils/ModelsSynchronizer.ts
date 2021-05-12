@@ -2,13 +2,13 @@ import { sequelize } from './BaseDB';
 import { Roles, Permissions, RolePermissions, Users } from '../models/relations';
 import { PermissionsList } from '../constants';
 import { encrypt } from "./security";
-import {Sequelize} from "sequelize";
+import { Sequelize } from "sequelize";
+import { IKeyValue } from "../utils/interfaces";
 
 interface IRolesPermission {
     roleId: number,
     permissionId: number
 }
-
 
 export class ModelsSynchronizer {
     private async log(sequelize: Sequelize) {
@@ -22,63 +22,42 @@ export class ModelsSynchronizer {
 
     private async initPermissions() {
         await Permissions.destroy({ truncate: true, cascade: true });
-        const permissions = this.getUniquePermissions(PermissionsList);
+        const permissions = this.getListPermissions(PermissionsList);
         await Permissions.bulkCreate(permissions);
     }
 
+    private getListPermissions(PermissionsList: IKeyValue): object[] {
+        let permissionNames: object[] = [];
+        Object.keys(PermissionsList).forEach(key => permissionNames.push({ name: key }));
+        return permissionNames;
+    }
+
     private async initRolePermissions() {
+        await RolePermissions.truncate();
         const roles = await Roles.findAll({ raw: true });
         let rolePermissions: IRolesPermission[] = [];
-        const permissions: any = await Permissions.findAll({ raw: true });
-        let adminIdx:any;
-        let managerIdx:any;
-        let playerIdx:any;
-        roles.forEach((item: any) => {
-            if(item.name === "ADMIN")
-                adminIdx = item.id;
-            else if(item.name === "MANAGER")
-                managerIdx = item.id;
-            else
-                playerIdx = item.id
-        });
+        const permissions = await Permissions.findAll({ raw: true });
 
-        permissions.forEach(
-            (item: any) => {
-                PermissionsList.admin.forEach(
-                    (adminPermission: any) => {
-                        if(adminPermission.name === item.name) {
-                            rolePermissions.push({ roleId: adminIdx, permissionId: item.id });
-                        }
-                    }
-                )
-            }
-        );
+        let adminIdx: number = this.findRoleIndex("ADMIN", roles);
+        let managerIdx: number = this.findRoleIndex("MANAGER", roles);
+        let playerIdx: number = this.findRoleIndex("PLAYER", roles);
 
-        permissions.forEach(
-            (item: any) => {
-                PermissionsList.manager.forEach(
-                    (adminPermission: any) => {
-                        if(adminPermission.name === item.name) {
-                            rolePermissions.push({ roleId: managerIdx, permissionId: item.id });
-                        }
-                    }
-                )
-            }
-        );
-
-        permissions.forEach(
-            (item: any) => {
-                PermissionsList.player.forEach(
-                    (adminPermission: any) => {
-                        if(adminPermission.name === item.name) {
-                            rolePermissions.push({ roleId: playerIdx, permissionId: item.id });
-                        }
-                    }
-                )
-            }
-        );
+        for(const i of permissions) {
+            PermissionsList[i.name].forEach( roleName =>
+                roleName === "ADMIN" ? rolePermissions.push({ roleId: adminIdx, permissionId: i.id }) :
+                    roleName === "MANAGER" ? rolePermissions.push({ roleId: managerIdx, permissionId: i.id }) :
+                        rolePermissions.push({ roleId: playerIdx, permissionId: i.id })
+            )
+        }
 
         await RolePermissions.bulkCreate(rolePermissions);
+    }
+
+    private findRoleIndex(roleName: string, roles: object[]): number {
+        let id: number = 0;
+        roles.forEach(
+            (item: any) => item.name === roleName ? id = item.id : null )
+        return id;
     }
 
     private async createAdmin() {
@@ -95,40 +74,15 @@ export class ModelsSynchronizer {
         });
     }
 
-    private getUniquePermissions(permissions: any) {
-        let repeatPermissions = [...permissions.admin, ...permissions.manager, ...permissions.player];
-        let repeatPermissionsIdx = [];
-        let uniquePermissions: any = [];
-
-        for(let i= 0; i < repeatPermissions.length; i++) {
-            for(let j = i+1; j <= repeatPermissions.length; j++) {
-                if(j === repeatPermissions.length){
-                    break;
-                }
-                if(repeatPermissions[i].name === repeatPermissions[j].name) {
-                    repeatPermissionsIdx.push(j);
-                }
-            }
-        }
-
-        for(let k = 0; k < repeatPermissions.length; k++) {
-            if(!repeatPermissionsIdx.includes(k)) {
-                uniquePermissions.push(repeatPermissions[k]);
-            }
-        }
-
-        return uniquePermissions;
-    }
-
     async syncAll() {
         try {
             //await this.removeAll();
             await sequelize.authenticate();
             await sequelize.sync();
-            await this.initRoles();
-            await this.createAdmin();
-            await this.initPermissions();
-            await this.initRolePermissions();
+            // await this.initRoles();
+            // await this.createAdmin();
+            // await this.initPermissions();
+            //await this.initRolePermissions();
             await this.log(sequelize);
         } catch (e) {
             console.log(e);
