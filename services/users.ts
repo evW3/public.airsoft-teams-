@@ -1,5 +1,4 @@
 import { Roles, Users, VerificationCodes, Teams } from "../models/relations";
-import {usersRoute} from "../providers/users";
 
 export async function createUser(user: object): Promise<number> {
     const userInfo = await Users.create(user);
@@ -72,15 +71,6 @@ export async function getUserInfo(id: number) {
     return await Users.findOne({
         where: { id },
         attributes: ['email', 'login', 'profile_image'],
-        include: { model: Roles, attributes: ['name'] }
-    });
-}
-
-export async function getPlayerInfo(id: number) {
-    return await Users.findOne({
-        where: { id },
-        attributes: ['email', 'login', 'profile_image'],
         include: [{ model: Roles, attributes: ['name'] }, { model: Teams, attributes: ['name'] }]
     });
 }
-
