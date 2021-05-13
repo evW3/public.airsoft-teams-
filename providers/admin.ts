@@ -5,8 +5,8 @@ import { activateManager, getManagersInfo } from "../controllers/admin";
 
 const adminRoute = express.Router();
 
-adminRoute.post("/activate-manager", verify, checkPermission.bind({ permission: 'someP' }), activateManager);
-// adminRoute.get("/managers", verify, checkPermission, getManagersInfo);
-// adminRoute.get("/managers/:id", verify, checkPermission, getManagersInfo);
+adminRoute.post("/activate-manager", verify, checkPermission.bind({ permission: 'activateManager' }), activateManager);
+adminRoute.get("/managers", verify, checkPermission.bind({ permission: 'getManagers' }), getManagersInfo);
+adminRoute.get("/managers/:id", verify, checkPermission.bind({ permission: 'getManagers' }), getManagersInfo);
 
 export { adminRoute };

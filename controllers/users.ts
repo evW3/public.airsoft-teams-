@@ -1,10 +1,14 @@
 import * as express from "express";
 import config from "config";
-import formidable from "formidable"
+import formidable, {Fields, Files} from "formidable"
+import { File } from "formidable";
+import fs from "fs";
+import path from "path";
 
-import { ROLES } from "../constants";
+import { v4 as uuidv4 } from 'uuid';
+import { uploads } from "../constants";
 import { create } from "../middleware/token";
-import { getRoleIdByName, getUserRole } from "../services/roles";
+import { getRoleIdByName } from "../services/roles";
 import { createDevice, isExistDevice,  } from "../services/devices";
 import { clearUserCodes } from "../services/verificationCodes";
 import { sendSimpleMail } from "../utils/smtp";
@@ -18,7 +22,10 @@ import {
     getIdByEmail,
     isUserHasCode,
     setUserPassword,
-    getUserInfo
+    getUserInfo,
+    getEmailByUserId,
+    setUserLogin,
+    setUserPhoto
 } from "../services/users";
 
 const url: string = config.get('url');
@@ -172,16 +179,57 @@ export async function getUserProfile(req: express.Request, res: express.Response
 
 export async function updateUserProfile(req: express.Request, res: express.Response) {
     try {
+        const { userId } = req.body;
+        let path: string | null = null;
         const form = new formidable({ multiples: true });
-        form.parse(req, (err, fields, files) => {
+        form.parse(req, async (err, fields: Fields, files: Files) => {
             if (err) {
-                console.log(fields, files);
-                res.status(400).json({ error: err });
+                res.status(400).json({ message: err });
                 return;
+            } else if(files) {
+                path = writeFile(files);
+                if(path) {
+                    await setUserPhoto(userId, path)
+                }
+            }
+            if(fields) {
+                const { login, currentPassword, newPassword } = fields;
+                const email: string | null = await getEmailByUserId(userId);
+                if(email) {
+
+                    const userSalt: string | null = await getUserSalt(email);
+                    const strongPassword: string = await encryptBySalt(<string>currentPassword, <string>userSalt);
+                    const isValid: boolean = await isUserValid(email, strongPassword);
+
+                    if(isValid) {
+                        const encryptData = await encrypt(<string>newPassword);
+                        await setUserPassword(userId, encryptData.strongPassword, encryptData.salt);
+                    }
+
+                    if(login) {
+                        await setUserLogin(userId, <string>login);
+                    }
+                }
             }
             res.status(200).json({ message: "Files are upload successfully" });
         });
     } catch (e) {
-        res.status(500).json({ error: `Can\`t update user profile \n${ e }` });
+        res.status(500).json({ message: `Can\`t update user profile \n${ e }` });
     }
+}
+
+function writeFile(files: Files): string | null {
+    if(files.photo) {
+        const { name, path: imagePath } = <File>(files.photo);
+        if(name && imagePath) {
+            const extension: string = name.split('.').reverse()[0];
+            const imageName: string = `${ uuidv4() + '.' + extension }`;
+            const fullPath: string = path.resolve(__dirname, '..', 'uploads', imageName);
+
+            fs.writeFileSync(fullPath, fs.readFileSync(imagePath));
+
+            return `${ uploads }/${ imageName }`;
+        }
+    }
+    return null;
 }

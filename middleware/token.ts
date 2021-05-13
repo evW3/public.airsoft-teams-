@@ -8,7 +8,6 @@ import { sendSimpleMail } from "../utils/smtp";
 import { createCode } from "../services/verificationCodes";
 import { IToken, ICodeTokenBody, IDefaultTokenBody } from "../utils/interfaces";
 
-
 const tokenData: IToken = config.get('token');
 
 const url: string = config.get('url');
@@ -31,9 +30,8 @@ export async function verify(req: Request, res: Response, next: NextFunction) {
         const reqBrowser: string | undefined = req?.headers['user-agent'];
 
         if(token && reqIp && reqBrowser) {
-            // Q
-            const userI: any = jwt.verify(token, tokenData.secretKey);
-            const user: IDefaultTokenBody | null = userI || null;
+
+            const user = <IDefaultTokenBody>jwt.verify(token, tokenData.secretKey);
 
             if(user) {
                 const devices = await getUserDevices(user.userId);
@@ -78,9 +76,7 @@ export async function codesVerify(req: Request, res: Response, next: NextFunctio
         const requestBody = req.body;
 
         if(token) {
-            // Q
-            const dataI: any = jwt.verify(token, tokenData.codesKey);
-            const data: ICodeTokenBody | null = dataI || null;
+            const data = <ICodeTokenBody>jwt.verify(token, tokenData.codesKey);
 
             if(data) {
                 if(data.code) {

@@ -1,4 +1,5 @@
-import { Roles, Users, VerificationCodes } from "../models/relations";
+import { Roles, Users, VerificationCodes, Teams } from "../models/relations";
+import {usersRoute} from "../providers/users";
 
 export async function createUser(user: object): Promise<number> {
     const userInfo = await Users.create(user);
@@ -48,11 +49,12 @@ export async function setUserPassword(id: number, password: string, password_sal
     await Users.update({ password, password_salt },{ where: { id } });
 }
 
-export async function isUserActivated(email: string): Promise<boolean | null> {
-    const user = await Users.findOne({ where: { email }, raw: true });
-    if(!user)
-        return null;
-    return user.activation;
+export async function setUserLogin(id: number, login: string) {
+    await Users.update({login}, { where: { id } });
+}
+
+export async function setUserPhoto(id:number, profile_image: string) {
+    await Users.update({ profile_image }, { where: { id } });
 }
 
 export async function changeActivation(id: number, activation: boolean) {
@@ -71,6 +73,14 @@ export async function getUserInfo(id: number) {
         where: { id },
         attributes: ['email', 'login', 'profile_image'],
         include: { model: Roles, attributes: ['name'] }
+    });
+}
+
+export async function getPlayerInfo(id: number) {
+    return await Users.findOne({
+        where: { id },
+        attributes: ['email', 'login', 'profile_image'],
+        include: [{ model: Roles, attributes: ['name'] }, { model: Teams, attributes: ['name'] }]
     });
 }
 

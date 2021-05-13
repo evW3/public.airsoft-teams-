@@ -63,13 +63,28 @@ export interface IUsers extends Model {
     password: string,
     password_salt: string,
     login: string,
-    profile_image: string,
-    activation: boolean
+    profile_image: string
 }
 
 export interface IVerificationCodes extends Model {
     id: number;
     code: string;
+}
+
+export interface IQueries extends Model {
+    id: number,
+    type: string,
+    status: string
+}
+
+export interface IComments extends Model {
+    id: number,
+    description: string
+}
+
+export interface ITeams extends Model {
+    id: number,
+    name: string
 }
 
 export interface IKeyValue {
@@ -79,4 +94,8 @@ export interface IKeyValue {
 export interface IRolesConstant {
     PLAYER: string,
     MANAGER: string
+}
+
+export interface IThisProtected {
+    permission: string
 }

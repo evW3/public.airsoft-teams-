@@ -1,5 +1,6 @@
 import { sequelize, DataTypes } from '../utils/BaseDB';
 import { v4 as uuidv4 } from 'uuid';
+import { uploads } from "../constants";
 import { IUsers } from "../utils/interfaces";
 
 const Users = sequelize.define<IUsers>("users", {
@@ -22,11 +23,8 @@ const Users = sequelize.define<IUsers>("users", {
         defaultValue: uuidv4().split("-")[0]
     },
     profile_image: {
-        type: DataTypes.STRING
-    },
-    activation: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false
+        type: DataTypes.STRING,
+        defaultValue: `${ uploads }/default.jpg`
     }
 },{
         freezeTableName: true,

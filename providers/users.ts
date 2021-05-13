@@ -11,6 +11,8 @@ import {
     updateUserProfile
 } from "../controllers/users";
 
+import { checkPermission } from "../middleware/protected";
+
 usersRoute.put('/sign-up', signUp);
 usersRoute.post('/sign-in', signIn);
 
@@ -20,7 +22,7 @@ usersRoute.post('/register-devices', codesVerify, registerDevice);
 usersRoute.post('/recover-password', sendRecoverToken);
 usersRoute.post('/forgot-password', codesVerify, recoverUserPassword);
 
-usersRoute.get('/profile', verify, getUserProfile);
+usersRoute.get('/profile', verify, checkPermission.bind({ permission: "getDefaultProfile" }), getUserProfile);
 usersRoute.put('/profile', verify, updateUserProfile);
 
 export { usersRoute };

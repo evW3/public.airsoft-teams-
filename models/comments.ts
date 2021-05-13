@@ -1,0 +1,19 @@
+import { sequelize, DataTypes } from '../utils/BaseDB';
+import { IComments } from "../utils/interfaces";
+
+const Comments = sequelize.define<IComments>("comments", {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false
+    }
+}, {
+    timestamps: false,
+    freezeTableName: true,
+});
+
+export { Comments };

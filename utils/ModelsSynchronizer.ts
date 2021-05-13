@@ -82,7 +82,7 @@ export class ModelsSynchronizer {
             // await this.initRoles();
             // await this.createAdmin();
             // await this.initPermissions();
-            //await this.initRolePermissions();
+            // await this.initRolePermissions();
             await this.log(sequelize);
         } catch (e) {
             console.log(e);
