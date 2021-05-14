@@ -1,5 +1,6 @@
 import { Model } from "./BaseDB";
 import {Mode} from "fs";
+import {json} from "sequelize";
 
 export interface IBcrypt {
     saltRounds: number,
@@ -88,6 +89,11 @@ export interface IBlockList extends Model {
     description: string
 }
 
+export interface ITeamMembers extends Model {
+    userId: number,
+    teamId: number
+}
+
 export interface ITeams extends Model {
     id: number,
     name: string
@@ -98,13 +104,13 @@ export interface IQueriesComments extends Model {
     commentId: number
 }
 
-export interface IKeyValue {
-    [key: string]: string[]
+export interface IQueryParams extends Model {
+    id: number,
+    parameters: object
 }
 
-export interface IRolesConstant {
-    PLAYER: string,
-    MANAGER: string
+export interface IKeyValue {
+    [key: string]: string[]
 }
 
 export interface IThisProtected {

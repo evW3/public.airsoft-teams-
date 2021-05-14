@@ -6,7 +6,7 @@ import { isExistsUserInBlockList } from "../services/blockList";
 
 export async function checkManagerRole(req: Request, res: Response, next: NextFunction) {
     try {
-        const { managerId } = req.body;
+        const managerId: number = req.body.managerId;
         const role = await getUserRole({ id: managerId });
         if(role && role === userRoles.MANAGER) {
             next();

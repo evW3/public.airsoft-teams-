@@ -1,5 +1,3 @@
-import {IRolesConstant} from "./interfaces";
-
 export enum statuses {
     PROCESSED = 'PROCESSED',
     ACCEPTED = 'ACCEPTED',
@@ -7,7 +5,8 @@ export enum statuses {
 }
 
 export enum queryTypes {
-    CHANGE_ROLE = 'CHANGE_ROLE'
+    CHANGE_ROLE = 'CHANGE_ROLE',
+    ENTER_TEAM = 'ENTER_TEAM'
 }
 
 export enum userRoles {

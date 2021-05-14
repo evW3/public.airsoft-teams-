@@ -1,7 +1,14 @@
 import express from 'express';
 import { verify } from "../middleware/token";
 import { checkPermission } from "../middleware/protected";
-import { acceptManager, getManagers, getManagerById, blockManager, unblockManager } from "../controllers/managers";
+import {
+    acceptManager,
+    declineManager,
+    getManagers,
+    getManagerById,
+    blockManager,
+    unblockManager
+} from "../controllers/managers";
 import { changeRoleQueryVerify } from "../middleware/queries";
 import { checkManagerRole, getIdFromParams, blockManagerVerify, unblockManagerVerify } from "../middleware/managers";
 
@@ -13,6 +20,14 @@ managerRoute.post(
     checkPermission.bind({ permission: 'activateManager' }),
     changeRoleQueryVerify,
     acceptManager
+);
+
+managerRoute.post(
+    "/decline-manager",
+    verify,
+    checkPermission.bind({ permission: 'declineManager' }),
+    changeRoleQueryVerify,
+    declineManager
 );
 
 managerRoute.get(

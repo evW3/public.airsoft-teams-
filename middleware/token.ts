@@ -7,6 +7,7 @@ import { getEmailByUserId } from "../services/users";
 import { sendSimpleMail } from "../utils/smtp";
 import { createCode } from "../services/verificationCodes";
 import { IToken, ICodeTokenBody, IDefaultTokenBody } from "../utils/interfaces";
+import {getBlockDescription, isExistsUserInBlockList} from "../services/blockList";
 
 const tokenData: IToken = config.get('token');
 
@@ -44,8 +45,13 @@ export async function verify(req: Request, res: Response, next: NextFunction) {
                 });
 
                 if(isValid) {
-                    req.body = { ...requestBody, userId: user.userId };
-                    next();
+                    if(!await isExistsUserInBlockList(user.userId)) {
+                        req.body = { ...requestBody, userId: user.userId };
+                        next();
+                    } else {
+                        const description = await getBlockDescription(user.userId);
+                        res.status(400).json({ message: `Admin has blocked ur account, description: ${ description }` });
+                    }
                 } else {
                     const token = await codeToken(user.userId, { ip: reqIp, browser: reqBrowser });
                     const email: string | null = await getEmailByUserId(user.userId);

@@ -27,8 +27,6 @@ import {
     setUserLogin,
     setUserPhoto
 } from "../services/users";
-import { createComment } from "../services/comments";
-import { blockUser } from "../services/blockList";
 
 const url: string = config.get('url');
 
@@ -215,7 +213,7 @@ export async function updateUserProfile(req: Request, res: Response) {
                     await setUserLogin(userId, <string>login);
                 }
             }
-            res.status(200).json({ message: "Files are upload successfully" });
+            res.status(200).json({ message: "Profile update successfully" });
         });
     } catch (e) {
         res.status(500).json({ message: `Can\`t update user profile \n${ e }` });

@@ -1,4 +1,4 @@
-import { IKeyValue, IRolesConstant } from "./utils/interfaces";
+import { IKeyValue } from "./utils/interfaces";
 import config from "config";
 
 const url: string = config.get('url');
@@ -11,5 +11,6 @@ export const PermissionsList: IKeyValue = {
     getManagerById: [ 'ADMIN' ],
     blockManager: [ 'ADMIN' ],
     unblockManager: [ 'ADMIN' ],
+    declineManager: [ 'ADMIN' ],
     registerTeam: [ 'ADMIN' ]
 }
