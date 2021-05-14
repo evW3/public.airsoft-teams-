@@ -1,4 +1,4 @@
-import { Roles, Users, VerificationCodes, Teams } from "../models/relations";
+import { Roles, Users, VerificationCodes, Teams, Queries } from "../models/relations";
 
 export async function createUser(user: object): Promise<number> {
     const userInfo = await Users.create(user);
@@ -56,10 +56,6 @@ export async function setUserPhoto(id:number, profile_image: string) {
     await Users.update({ profile_image }, { where: { id } });
 }
 
-export async function changeActivation(id: number, activation: boolean) {
-    await Users.update({ activation }, { where: { id } });
-}
-
 export async function getUsersByRole(role: string) {
     return await Users.findAll({
         include: { model: Roles, where: { name: role }, attributes:[] },
@@ -75,3 +71,15 @@ export async function getUser(id: number) {
         include: [{ model: Roles, attributes: ['name'] }, { model: Teams, attributes: ['name'] }]
     });
 }
+
+export async function changeUserRole(roleId: number, id: number) {
+    await Users.update({ roleId }, { where: { id } })
+}
+
+export async function getUserIdByQueryId(queryId: number): Promise<number | null> {
+    const user = await Users.findOne({ attributes: ['id'], include: [{ model: Queries, where: { id: queryId } }] });
+    if(!user)
+        return null;
+    return user.id;
+}
+

@@ -13,3 +13,10 @@ export async function getUserRole(user: object): Promise<string | null> {
         return null;
     return userData.name;
 }
+
+export async function getIdRole(name: string): Promise<number | null> {
+    const role = await Roles.findOne({ where: { name }, attributes: ['id'] });
+    if(!role)
+        return null
+    return role.id;
+}

@@ -1,15 +1,18 @@
 import * as express from "express";
 
-import { changeActivation, getUsersByRole } from "../services/users"
+import { getUsersByRole, changeUserRole } from "../services/users"
+import { changeQueryStatus } from "../services/queries";
+import { statuses, userRoles } from "../utils/enums";
+import { getIdRole } from "../services/roles";
 
 export async function activateManager(req: express.Request, res: express.Response) {
     try {
-        const { managerId, activation } = req.body;
-        if(managerId && activation) {
-            await changeActivation(managerId, activation);
+        const { queryId, userId } = req.body;
+        await changeQueryStatus(queryId, statuses.ACCEPTED);
+        const roleId = await getIdRole(userRoles.MANAGER);
+        if(roleId) {
+            await changeUserRole(roleId, userId);
             res.status(200).json({ message: "Manager activation was changed" });
-        } else {
-            res.status(400).json({ message: "Can`t change manager activation" });
         }
     } catch (e) {
         res.status(500).json({ error: `Can\`t change manager activation ${ e }` });

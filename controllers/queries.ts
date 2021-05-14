@@ -1,5 +1,5 @@
 import * as express from "express";
-import { createQuery, isExistQuery } from "../services/queries";
+import { createQuery } from "../services/queries";
 import { queryTypes, statuses } from "../utils/enums";
 
 export async function createRoleQuery(req: express.Request, res: express.Response) {

@@ -2,13 +2,15 @@ import express from 'express';
 import { verify } from "../middleware/token";
 import { checkPermission } from "../middleware/protected";
 import { activateManager, getManagersInfo } from "../controllers/managers";
+import { changeRoleQueryVerify } from "../middleware/queries";
 
 const managerRoute = express.Router();
 
 managerRoute.post(
-    "/activate-manager",
+    "/accept-manager",
     verify,
     checkPermission.bind({ permission: 'activateManager' }),
+    changeRoleQueryVerify,
     activateManager
 );
 
