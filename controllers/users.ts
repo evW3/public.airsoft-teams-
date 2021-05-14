@@ -1,11 +1,11 @@
 import * as express from "express";
 import config from "config";
-import formidable, {Fields, Files} from "formidable"
+import formidable, { Fields, Files } from "formidable"
 import { File } from "formidable";
 import fs from "fs";
 import path from "path";
 
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { uploads } from "../constants";
 import { create } from "../middleware/token";
 import { getRoleIdByName } from "../services/roles";
@@ -22,7 +22,7 @@ import {
     getIdByEmail,
     isUserHasCode,
     setUserPassword,
-    getUserInfo,
+    getUser,
     getEmailByUserId,
     setUserLogin,
     setUserPhoto
@@ -171,7 +171,7 @@ export async function registerDevice(req: express.Request, res: express.Response
 export async function getUserProfile(req: express.Request, res: express.Response) {
     try {
         const { userId } = req.body;
-        res.status(200).json({ user: await getUserInfo(userId) });
+        res.status(200).json({ user: await getUser(userId) });
     } catch (e) {
         res.status(500).json({ error: `Can\`t get user profile \n${ e }` });
     }
@@ -179,6 +179,7 @@ export async function getUserProfile(req: express.Request, res: express.Response
 
 export async function updateUserProfile(req: express.Request, res: express.Response) {
     try {
+        //Q
         const { userId } = req.body;
         let path: string | null = null;
         const form = new formidable({ multiples: true });
@@ -186,16 +187,17 @@ export async function updateUserProfile(req: express.Request, res: express.Respo
             if (err) {
                 res.status(400).json({ message: err });
                 return;
-            } else if(files) {
+            } else {
                 path = writeFile(files);
+
                 if(path) {
                     await setUserPhoto(userId, path)
                 }
-            }
-            if(fields) {
+
                 const { login, currentPassword, newPassword } = fields;
                 const email: string | null = await getEmailByUserId(userId);
-                if(email) {
+
+                if(email && currentPassword && newPassword) {
 
                     const userSalt: string | null = await getUserSalt(email);
                     const strongPassword: string = await encryptBySalt(<string>currentPassword, <string>userSalt);
@@ -205,10 +207,10 @@ export async function updateUserProfile(req: express.Request, res: express.Respo
                         const encryptData = await encrypt(<string>newPassword);
                         await setUserPassword(userId, encryptData.strongPassword, encryptData.salt);
                     }
+                }
 
-                    if(login) {
-                        await setUserLogin(userId, <string>login);
-                    }
+                if(login) {
+                    await setUserLogin(userId, <string>login);
                 }
             }
             res.status(200).json({ message: "Files are upload successfully" });

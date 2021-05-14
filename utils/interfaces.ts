@@ -99,3 +99,10 @@ export interface IRolesConstant {
 export interface IThisProtected {
     permission: string
 }
+
+export interface IUser {
+    login?: string,
+    password?: string,
+    password_salt?: string,
+    profile_image?: string
+}

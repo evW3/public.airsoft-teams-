@@ -63,11 +63,12 @@ export async function changeActivation(id: number, activation: boolean) {
 export async function getUsersByRole(role: string) {
     return await Users.findAll({
         include: { model: Roles, where: { name: role }, attributes:[] },
-        attributes: ['email', ],
-        raw: true });
+        attributes: ['email', 'login'],
+        raw: true
+    });
 }
 
-export async function getUserInfo(id: number) {
+export async function getUser(id: number) {
     return await Users.findOne({
         where: { id },
         attributes: ['email', 'login', 'profile_image'],

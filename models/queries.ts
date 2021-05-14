@@ -1,4 +1,4 @@
-import {DataTypes, sequelize} from '../utils/BaseDB';
+import {DataTypes, sequelize} from "../utils/BaseDB";
 import {IQueries} from "../utils/interfaces";
 import { statuses, queryTypes } from "../utils/enums";
 
@@ -18,6 +18,9 @@ const Queries = sequelize.define<IQueries>("queries", {
         values: [statuses.ACCEPTED, statuses.DECLINE, statuses.PROCESSED],
         defaultValue: statuses.PROCESSED,
         allowNull: false
+    },
+    parameters: {
+        type: DataTypes.JSON
     }
 }, {
     timestamps: false,
