@@ -4,10 +4,10 @@ import { getUsersByRole, changeUserRole, getUser } from "../services/users"
 import { changeQueryStatus } from "../services/queries";
 import { statuses, userRoles } from "../utils/enums";
 import { getIdRole } from "../services/roles";
-import { createComment } from "../services/comments";
 import { blockUser, unblockUser } from "../services/blockList";
+import { createComment } from "../services/comments";
 
-export async function activateManager(req: Request, res: Response) {
+export async function acceptManager(req: Request, res: Response) {
     try {
         const { queryId, userId } = req.body;
         await changeQueryStatus(queryId, statuses.ACCEPTED);
@@ -16,6 +16,16 @@ export async function activateManager(req: Request, res: Response) {
             await changeUserRole(roleId, userId);
             res.status(200).json({ message: "Manager activation was changed" });
         }
+    } catch (e) {
+        res.status(500).json({ error: `Can\`t change manager activation ${ e }` });
+    }
+}
+
+export async function declineManager(req: Request, res: Response) {
+    try {
+        const { queryId, description } = req.body;
+        await changeQueryStatus(queryId, statuses.DECLINE);
+        res.status(200).json({ message: "Manager activation was changed" });
     } catch (e) {
         res.status(500).json({ error: `Can\`t change manager activation ${ e }` });
     }
@@ -38,11 +48,10 @@ export async function getManagerById(req: Request, res: Response) {
     }
 }
 
-export async function blocManager(req: Request, res: Response) {
+export async function blockManager(req: Request, res: Response) {
     try {
         const { managerId, description } = req.body;
-        const commentId = await createComment(description);
-        await blockUser(managerId, commentId);
+        await blockUser(managerId, description);
         res.status(200).json({ message: "Manager was blocked" });
     } catch (e) {
         res.status(500).json({ message: `Can\`t block manager`});
@@ -53,6 +62,7 @@ export async function unblockManager(req: Request, res: Response) {
     try {
         const { managerId } = req.body;
         await unblockUser(managerId);
+        res.status(200).json({ message: "Manager was unblock" });
     } catch (e) {
         res.status(500).json({ message: `Can\`t unblock manager`});
     }

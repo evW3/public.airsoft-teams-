@@ -1,21 +1,15 @@
 import { sequelize, DataTypes } from '../utils/BaseDB';
 import { IBlockList } from "../utils/interfaces";
-import { Users, Comments } from "./relations";
 
 const BlockList = sequelize.define<IBlockList>("block-list", {
-    userId: {
+    id: {
         type: DataTypes.INTEGER,
-        references: {
-            model: Users,
-            key: 'id'
-        }
+        primaryKey: true,
+        autoIncrement: true
     },
-    commentId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Comments,
-            key: 'id'
-        }
+    description: {
+        type: DataTypes.STRING,
+        allowNull: false
     }
 }, {
     timestamps: false,

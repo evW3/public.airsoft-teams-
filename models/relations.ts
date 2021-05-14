@@ -31,8 +31,8 @@ Permissions.belongsToMany(Roles, { through: RolePermissions, onDelete: 'cascade'
 Queries.belongsToMany(Comments, { through: QueriesComments, onDelete: 'cascade' });
 Comments.belongsToMany(Queries, { through: QueriesComments, onDelete: 'cascade' });
 
-Users.belongsToMany(Comments, { through: BlockList, onDelete: 'cascade' });
-Comments.belongsToMany(Users, { through: BlockList, onDelete: 'cascade' });
+Users.hasOne(BlockList, { onDelete: 'cascade' });
+BlockList.belongsTo(Users);
 
 export {
     Users,

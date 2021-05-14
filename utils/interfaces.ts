@@ -85,7 +85,7 @@ export interface IComments extends Model {
 
 export interface IBlockList extends Model {
     userId: number,
-    commentId: number
+    description: string
 }
 
 export interface ITeams extends Model {

@@ -9,5 +9,7 @@ export const PermissionsList: IKeyValue = {
     activateManager: [ 'ADMIN' ],
     getManagers: [ 'ADMIN' ],
     getManagerById: [ 'ADMIN' ],
+    blockManager: [ 'ADMIN' ],
+    unblockManager: [ 'ADMIN' ],
     registerTeam: [ 'ADMIN' ]
 }
