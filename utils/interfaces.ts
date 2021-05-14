@@ -1,4 +1,5 @@
 import { Model } from "./BaseDB";
+import {Mode} from "fs";
 
 export interface IBcrypt {
     saltRounds: number,
@@ -82,9 +83,19 @@ export interface IComments extends Model {
     description: string
 }
 
+export interface IBlockList extends Model {
+    userId: number,
+    commentId: number
+}
+
 export interface ITeams extends Model {
     id: number,
     name: string
+}
+
+export interface IQueriesComments extends Model {
+    queryId: number,
+    commentId: number
 }
 
 export interface IKeyValue {

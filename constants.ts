@@ -8,5 +8,6 @@ export const uploads: string = `${ url }/uploads`;
 export const PermissionsList: IKeyValue = {
     activateManager: [ 'ADMIN' ],
     getManagers: [ 'ADMIN' ],
+    getManagerById: [ 'ADMIN' ],
     registerTeam: [ 'ADMIN' ]
 }

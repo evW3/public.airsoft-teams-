@@ -1,8 +1,9 @@
 import express from 'express';
 import { verify } from "../middleware/token";
 import { checkPermission } from "../middleware/protected";
-import { activateManager, getManagersInfo } from "../controllers/managers";
+import { activateManager, getManagers, getManagerById } from "../controllers/managers";
 import { changeRoleQueryVerify } from "../middleware/queries";
+import { checkManagerRole } from "../middleware/managers";
 
 const managerRoute = express.Router();
 
@@ -18,14 +19,15 @@ managerRoute.get(
     "/managers",
     verify,
     checkPermission.bind({ permission: 'getManagers' }),
-    getManagersInfo
+    getManagers
 );
 
 managerRoute.get(
     "/managers/:id",
     verify,
     checkPermission.bind({ permission: 'getManagers' }),
-    getManagersInfo
+    checkManagerRole,
+    getManagerById
 );
 
 export { managerRoute };

@@ -58,7 +58,7 @@ export async function setUserPhoto(id:number, profile_image: string) {
 
 export async function getUsersByRole(role: string) {
     return await Users.findAll({
-        include: { model: Roles, where: { name: role }, attributes:[] },
+        include: { model: Roles, where: { name: role }, attributes: [] },
         attributes: ['email', 'login'],
         raw: true
     });
@@ -82,4 +82,3 @@ export async function getUserIdByQueryId(queryId: number): Promise<number | null
         return null;
     return user.id;
 }
-

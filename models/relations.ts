@@ -7,6 +7,8 @@ import { RolePermissions } from "./rolePermissions";
 import { Queries } from "./queries";
 import { Comments } from "./comments";
 import { Teams } from "./teams";
+import { QueriesComments } from "./queriesComments"
+import { BlockList } from "./blockList";
 
 Roles.hasOne(Users);
 Users.belongsTo(Roles);
@@ -20,14 +22,17 @@ Devices.belongsTo(Users);
 Users.hasMany(VerificationCodes, { onDelete: 'cascade' });
 VerificationCodes.belongsTo(Users);
 
-Roles.belongsToMany(Permissions, { through: RolePermissions, onDelete: 'cascade' });
-Permissions.belongsToMany(Roles, { through: RolePermissions, onDelete: 'cascade' });
-
 Users.hasMany(Queries);
 Queries.belongsTo(Users);
 
-Queries.hasOne(Comments);
-Comments.belongsTo(Queries);
+Roles.belongsToMany(Permissions, { through: RolePermissions, onDelete: 'cascade' });
+Permissions.belongsToMany(Roles, { through: RolePermissions, onDelete: 'cascade' });
+
+Queries.belongsToMany(Comments, { through: QueriesComments, onDelete: 'cascade' });
+Comments.belongsToMany(Queries, { through: QueriesComments, onDelete: 'cascade' });
+
+Users.belongsToMany(Comments, { through: BlockList, onDelete: 'cascade' });
+Comments.belongsToMany(Users, { through: BlockList, onDelete: 'cascade' });
 
 export {
     Users,
@@ -37,5 +42,8 @@ export {
     Permissions,
     RolePermissions,
     Queries,
-    Teams
+    Teams,
+    Comments,
+    QueriesComments,
+    BlockList
 };

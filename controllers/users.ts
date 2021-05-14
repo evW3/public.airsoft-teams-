@@ -1,11 +1,11 @@
-import * as express from "express";
+import { Request, Response } from "express";
 import config from "config";
 import formidable, { Fields, Files } from "formidable"
 import { File } from "formidable";
 import fs from "fs";
 import path from "path";
-
 import { v4 as uuidv4 } from "uuid";
+
 import { uploads } from "../constants";
 import { create } from "../middleware/token";
 import { getRoleIdByName } from "../services/roles";
@@ -27,10 +27,12 @@ import {
     setUserLogin,
     setUserPhoto
 } from "../services/users";
+import { createComment } from "../services/comments";
+import { blockUser } from "../services/blockList";
 
 const url: string = config.get('url');
 
-export async function signUp(req: express.Request, res: express.Response) {
+export async function signUp(req: Request, res: Response) {
     try {
         const { password, repeatPassword, email } = req.body;
         const isUnique: boolean = email && !(await isEmailExist(email));
@@ -70,7 +72,7 @@ export async function signUp(req: express.Request, res: express.Response) {
     }
 }
 
-export async function signIn(req: express.Request, res: express.Response) {
+export async function signIn(req: Request, res: Response) {
     try {
         const { password, email } = req.body;
         const isExists: boolean = password && email && (await isEmailExist(email));
@@ -97,7 +99,7 @@ export async function signIn(req: express.Request, res: express.Response) {
     }
 }
 
-export async function recoverUserPassword(req: express.Request, res: express.Response) {
+export async function recoverUserPassword(req: Request, res: Response) {
     try {
         const { password, repeatPassword, code, userId } = req.body;
         if(password === repeatPassword) {
@@ -120,7 +122,7 @@ export async function recoverUserPassword(req: express.Request, res: express.Res
     }
 }
 
-export async function sendRecoverToken(req: express.Request, res: express.Response) {
+export async function sendRecoverToken(req: Request, res: Response) {
     try {
         const { email } = req.body;
         const isExists: boolean = email && await isEmailExist(email);
@@ -143,7 +145,7 @@ export async function sendRecoverToken(req: express.Request, res: express.Respon
     }
 }
 
-export async function registerDevice(req: express.Request, res: express.Response) {
+export async function registerDevice(req: Request, res: Response) {
     try {
         const { ip, browser, code, userId } = req.body;
         const isUnique = !(await isExistDevice(userId, ip, browser));
@@ -168,7 +170,7 @@ export async function registerDevice(req: express.Request, res: express.Response
     }
 }
 
-export async function getUserProfile(req: express.Request, res: express.Response) {
+export async function getUserProfile(req: Request, res: Response) {
     try {
         const { userId } = req.body;
         res.status(200).json({ user: await getUser(userId) });
@@ -177,7 +179,7 @@ export async function getUserProfile(req: express.Request, res: express.Response
     }
 }
 
-export async function updateUserProfile(req: express.Request, res: express.Response) {
+export async function updateUserProfile(req: Request, res: Response) {
     try {
         //Q
         const { userId } = req.body;
