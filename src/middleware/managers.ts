@@ -3,31 +3,37 @@ import { NextFunction, Request, Response } from "express";
 import { userRoles } from "../utils/enums";
 import { getUserRole } from "../services/roles";
 import { isExistsUserInBlockList } from "../services/blockList";
+import { Exception, User } from "../utils/classes";
 
 export async function checkManagerRole(req: Request, res: Response, next: NextFunction) {
     try {
-        const managerId: number = req.body.managerId;
-        const role = await getUserRole({ id: managerId });
+        const manager = new User();
+        manager.id = req.body.managerId
+        const role = await getUserRole(manager.id);
         if(role && role === userRoles.MANAGER) {
             next();
         } else
-            res.status(400).json({ message: "Can`t find manager" });
+            next(new Exception(400, "Can`t find manager"));
     } catch (e) {
-        res.status(500).json({ message: `Can\`t check manager role ${ e }` });
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t check manager role "));
     }
 }
 
 export async function getIdFromParams(req: Request, res: Response, next: NextFunction) {
     try {
-        const { id } = req.params;
+        const user = new User();
+        user.id = Number.parseInt(req.params.id);
         const reqBody = req.body;
-        if(id) {
-            req.body = { ...reqBody, managerId: id };
-            next()
-        } else
-            res.status(400).json({ message: "Id can`t be empty" })
+        req.body = { ...reqBody, managerId: user.id };
+        next()
     } catch (e) {
-        res.status(500).json({ message: `Can\`t get id from params`})
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t get id from params"));
     }
 }
 
@@ -37,9 +43,12 @@ export async function blockManagerVerify(req: Request, res: Response, next: Next
         if(!await isExistsUserInBlockList(managerId)) {
             next();
         } else
-            res.status(400).json({ message: "This user already banned" });
+            next(new Exception(400, "This user already banned"));
     } catch (e) {
-        res.status(500).json({ message: `Can\`t block manager ${ e }` });
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t block manager "));
     }
 }
 
@@ -49,8 +58,11 @@ export async function unblockManagerVerify(req: Request, res: Response, next: Ne
          if(await isExistsUserInBlockList(managerId)) {
              next();
          } else
-             res.status(400).json({ message: "User not found in ban list" });
+             next(new Exception(400, "User not found in ban list"));
     } catch (e) {
-        res.status(500).json({ message: `Can\`t unblock manager ${ e }` });
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t unblock manager "));
     }
 }

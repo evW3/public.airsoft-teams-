@@ -3,22 +3,62 @@ import {strict} from "assert";
 import {TokenExpiredError} from "jsonwebtoken";
 
 export class Photo {
-    imagePathToLoad: string;
-    name: string;
-    url: string;
-    fullFilePathToWrite: string;
-    uniqueName: string;
+    private _imagePathToLoad: string;
+    private _name: string;
+    private _url: string;
+    private _fullFilePathToWrite: string;
+    private _uniqueName: string;
 
-    constructor() {
-        this.imagePathToLoad = "";
-        this.name = "";
-        this.url = "";
-        this.fullFilePathToWrite = "";
-        this.uniqueName = "";
+    set imagePathToLoad(imagePathToLoad: string) {
+        if(imagePathToLoad === "string")
+            this._imagePathToLoad = imagePathToLoad;
+        else
+            throw new Exception(400, "Parameters isn`t valid")
+    }
+    set name(name: string) {
+        if(name === "string")
+            this._name = name;
+        else
+            throw new Exception(400, "Parameters isn`t valid")
+    }
+    set url(url: string) {
+        if(url === "string")
+            this._url = url;
+        else
+            throw new Exception(400, "Parameters isn`t valid")
+    }
+    set fullFilePathToWrite(fullFilePathToWrite: string) {
+        if(fullFilePathToWrite === "string")
+            this._fullFilePathToWrite = fullFilePathToWrite;
+        else
+            throw new Exception(400, "Parameters isn`t valid")
+    }
+    set uniqueName(uniqueName: string) {
+        if(uniqueName === "string")
+            this._uniqueName = uniqueName;
+        else
+            throw new Exception(400, "Parameters isn`t valid")
     }
 
+    get imagePathToLoad() {
+        return this._imagePathToLoad;
+    }
+    get name() {
+        return this._name;
+    }
+    get url() {
+        return this._url;
+    }
+    get fullFilePathToWrite() {
+        return this._fullFilePathToWrite;
+    }
+    get uniqueName() {
+        return this._uniqueName;
+    }
+
+
     isValid(): boolean {
-        return !!(this.imagePathToLoad && this.name);
+        return !!(this._imagePathToLoad && this._name);
     }
 }
 
