@@ -9,8 +9,7 @@ import { clearUserCodes } from "../services/verificationCodes";
 import { sendSimpleMail } from "../utils/smtp";
 import { codeToken } from "../middleware/token";
 import { encrypt, encryptBySalt } from "../utils/security";
-import { Response as Res } from "../utils/classes";
-import { HttpException } from "../utils/classes";
+import { Exception } from "../utils/classes";
 import {
     createUser,
     isEmailExist,
@@ -24,13 +23,13 @@ import {
     setUserLogin,
     setUserPhoto
 } from "../services/users";
-import {Photo, UserInfo} from "../utils/classes";
+import { Photo, User } from "../utils/classes";
 
 const url: string = config.get('url');
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = new UserInfo();
+        const user = new User();
         user.email = req.body.email;
         const { password, repeatPassword } = req.body;
         const isUnique: boolean = !(await isEmailExist(user.email));
@@ -46,29 +45,20 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
 
                 const encryptData = await encrypt(password);
 
-                const roleId: number | null = await getRoleIdByName(roleName);
-                if(roleId) {
-                    const userId: number = await createUser({
-                        password: encryptData.strongPassword,
-                        password_salt: encryptData.salt,
-                        email: user.email,
-                        roleId
-                    });
-                    if(userId) {
-                        await createDevice(req.ip, req?.headers['user-agent'], userId);
-                        res.status(200).json({ token: await create({ userId }) });
-                    }
-                }
-            } else {
-                const serverResponse = new Res(400, "Incorrect query")
-                serverResponse.sendResponse(res);
+                user.roleId = await getRoleIdByName(roleName);
+                user.password = encryptData.strongPassword;
+                user.passwordSalt = encryptData.salt;
+
+                const userId: number = await createUser(user);
+
+                await createDevice(req.ip, req?.headers['user-agent'], userId);
+                res.status(200).json({ token: await create({ userId }) });
             }
         } else {
-            const serverResponse = new Res(400, "User already exists")
-            serverResponse.sendResponse(res);
+            next(new Exception(400, "User already exists"));
         }
     } catch (e) {
-        next(new HttpException(500, "Can\`t create user"));
+        next(new Exception(500, "Can\`t create user"));
     }
 }
 
@@ -94,7 +84,6 @@ export async function signIn(req: Request, res: Response) {
             res.status(400).json({ error: "Can`t find user"})
         }
     } catch (e) {
-        console.log(e);
         res.status(500).json({ error: `Can\`t signIn \n${ e }` });
     }
 }
@@ -181,7 +170,7 @@ export async function getUserProfile(req: Request, res: Response) {
 
 export async function updateUserProfile(req: Request, res: Response) {
     try {
-        const user = new UserInfo();
+        const user = new User();
         const currentPassword: string | null = req.body.currentPassword || null;
         const newPassword: string | null = req.body.newPassword || null;
 
@@ -214,7 +203,7 @@ export async function updateUserProfile(req: Request, res: Response) {
 
 export async function changeUserPhoto(req: Request, res: Response) {
     try {
-        const user = new UserInfo();
+        const user = new User();
         user.id = req.body.userId;
         const photo: Photo = req.body.image;
         fs.writeFileSync(photo.fullFilePathToWrite, fs.readFileSync(photo.imagePathToLoad));

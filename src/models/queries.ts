@@ -18,9 +18,6 @@ const Queries = sequelize.define<IQueries>("queries", {
         values: [statuses.ACCEPTED, statuses.DECLINE, statuses.PROCESSED],
         defaultValue: statuses.PROCESSED,
         allowNull: false
-    },
-    parameters: {
-        type: DataTypes.JSON
     }
 }, {
     timestamps: false,

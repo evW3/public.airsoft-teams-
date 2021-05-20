@@ -1,7 +1,8 @@
 import { Roles, VerificationCodes, Teams, Queries, Users } from "../models/relations";
+import {User} from "../utils/classes";
 
-export async function createUser(user: object): Promise<number> {
-    const userInfo = await Users.create(user);
+export async function createUser(user: User): Promise<number> {
+    const userInfo = await Users.create(user.createUserObject());
     return userInfo.id;
 }
 
