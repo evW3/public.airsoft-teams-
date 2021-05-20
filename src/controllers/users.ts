@@ -134,7 +134,7 @@ export async function sendRecoverToken(req: Request, res: Response, next: NextFu
 
         if(isExists) {
             user.id = await getIdByEmail(user.email);
-            const tokenToRecoverPassword: string = await codeToken(user.id, null);
+            const tokenToRecoverPassword: string = await codeToken(user.id);
             await sendSimpleMail(
                 `<a href="${ url }/forgot-password?token=${ tokenToRecoverPassword }">Change password</a>`,
                 "Recover user password",

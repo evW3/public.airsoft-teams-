@@ -7,15 +7,22 @@ import { getEmailByUserId } from "../services/users";
 import { sendSimpleMail } from "../utils/smtp";
 import { createCode } from "../services/verificationCodes";
 import { IToken, ICodeTokenBody, IDefaultTokenBody } from "../utils/interfaces";
-import {getBlockDescription, isExistsUserInBlockList} from "../services/blockList";
+import { getBlockDescription, isExistsUserInBlockList } from "../services/blockList";
+import { Device, Exception, User } from "../utils/classes";
 
 const tokenData: IToken = config.get('token');
 
 const url: string = config.get('url');
 
-export async function codeToken(userId: number, data: object | null): Promise<string> {
+export async function codeToken(userId: number, device: Device | null = null): Promise<string> {
     const code: string = await createCode(userId);
-    const body: ICodeTokenBody = { userId, code, ...data };
+    let body: ICodeTokenBody;
+
+    if(device instanceof Device)
+        body = { userId, code, ...device.createDeviceObject() };
+    else
+        body = { userId, code, };
+
     return jwt.sign(body, tokenData.codesKey, { expiresIn: tokenData.codesExpiresIn });
 }
 
@@ -25,54 +32,47 @@ export async function create(user: object): Promise<string> {
 
 export async function verify(req: Request, res: Response, next: NextFunction) {
     try {
+        const device = new Device();
+        const user = new User();
         const token: string | undefined = req?.headers?.authorization?.split(' ')[1];
-        const requestBody = req?.body;
-        const reqIp: string | null = req?.ip;
-        const reqBrowser: string | undefined = req?.headers['user-agent'];
+        const requestBody = req.body;
+        device.ip = req.ip;
+        device.browser = req?.headers['user-agent'];
 
-        if(token && reqIp && reqBrowser) {
+        if(token) {
 
-            const user = <IDefaultTokenBody>jwt.verify(token, tokenData.secretKey);
+            const tokenBody = <IDefaultTokenBody>jwt.verify(token, tokenData.secretKey);
+            user.id = tokenBody.userId;
 
-            if(user) {
-                const devices = await getUserDevices(user.userId);
-                let isValid: boolean = false;
+            const devices = await getUserDevices(user.id);
 
-                devices.forEach(item => {
-                    if(reqIp === item.ip && reqBrowser === item.browser) {
-                        isValid = true;
-                    }
-                });
-
-                if(isValid) {
-                    if(!await isExistsUserInBlockList(user.userId)) {
-                        req.body = { ...requestBody, userId: user.userId };
-                        next();
-                    } else {
-                        const description = await getBlockDescription(user.userId);
-                        res.status(400).json({ message: `Admin has blocked ur account, description: ${ description }` });
-                    }
+            if(device.checkDeviceInArray(devices)) {
+                if(!await isExistsUserInBlockList(user.id)) {
+                    req.body = { ...requestBody, userId: user.id };
+                    next();
                 } else {
-                    const token = await codeToken(user.userId, { ip: reqIp, browser: reqBrowser });
-                    const email: string | null = await getEmailByUserId(user.userId);
-                    if(email) {
-                        await sendSimpleMail(
-                            `<a href="${ url }/register-device?token=${ token }">Activate device</a>`,
-                            "Register new device",
-                            email
-                        );
-
-                        res.status(403).json({
-                            error: "device is not registered for this user, check email to registered it"
-                        });
-                    }
+                    const description = await getBlockDescription(user.id);
+                    next(new Exception(400, `Admin has blocked ur account, description: ${ description }`));
                 }
+            } else {
+                const token = await codeToken(user.id, device);
+                user.email = await getEmailByUserId(user.id);
+                await sendSimpleMail(
+                    `<a href="${ url }/register-device?token=${ token }">Activate device</a>`,
+                    "Register new device",
+                    user.email
+                );
+
+                next(new Exception(403, "Device is not registered for this user, check email to registered it"))
             }
         } else {
-            res.status(401).json({ error: 'token can`t be undefined' });
+            next(new Exception(401, "Token can`t be undefined"))
         }
     } catch (e) {
-        res.status(401).json({ error: 'incorrect token' });
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(401, "Incorrect token"));
     }
 }
 
@@ -80,22 +80,23 @@ export async function codesVerify(req: Request, res: Response, next: NextFunctio
     try {
         const token: string | undefined = req?.headers?.authorization?.split(' ')[1];
         const requestBody = req.body;
-
         if(token) {
             const data = <ICodeTokenBody>jwt.verify(token, tokenData.codesKey);
-
             if(data) {
                 if(data.code) {
                     req.body = { ...requestBody, ...data };
                     next();
                 } else {
-                    res.status(401).json({ error: 'incorrect recover token' });
+                    next(new Exception(401, "Incorrect recover token"));
                 }
             }
         } else {
-            res.status(401).json({ error: 'recover token can`t be undefined' });
+            next(new Exception(401, "Recover token can`t be undefined"))
         }
     } catch (e) {
-        res.status(401).json({ error: 'incorrect recover token' });
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(401, "Incorrect recover token"));
     }
 }

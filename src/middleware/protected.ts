@@ -2,7 +2,7 @@ import { getUserRole } from "../services/roles"
 import { isRoleHavePermission } from "../services/rolePermissions";
 import { Response, Request, NextFunction } from "express";
 import { IThisProtected } from "../utils/interfaces";
-import {Exception, User} from "../utils/classes";
+import { Exception, User } from "../utils/classes";
 
 export async function checkPermission(this: IThisProtected, req: Request, res: Response, next: NextFunction) {
     try {

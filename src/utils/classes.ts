@@ -1,6 +1,7 @@
 import {log} from "util";
 import {strict} from "assert";
 import {TokenExpiredError} from "jsonwebtoken";
+import {IDevices} from "./interfaces";
 
 export class Photo {
     private _imagePathToLoad: string;
@@ -173,6 +174,16 @@ export class Device {
             ip: this._ip,
             browser: this._browser
         }
+    }
+
+    checkDeviceInArray(devices: IDevices[]): boolean {
+        let isValid: boolean = false;
+        devices.forEach(item => {
+            if(this._ip === item.ip && this._browser === item.browser) {
+                isValid = true;
+            }
+        });
+        return isValid;
     }
 }
 
