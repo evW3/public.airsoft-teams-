@@ -123,3 +123,7 @@ export interface IBody {
 export interface ITest {
     body: IBody
 }
+
+export interface IObjectWithName {
+    name: string
+}

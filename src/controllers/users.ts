@@ -32,7 +32,6 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
     try {
         const user = new UserInfo();
         user.email = req.body.email;
-        console.log(typeof user.email);
         const { password, repeatPassword } = req.body;
         const isUnique: boolean = !(await isEmailExist(user.email));
         const roleName = "PLAYER";

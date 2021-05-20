@@ -4,13 +4,13 @@ import { Users } from "../models/users";
 import { PermissionsList } from '../constants';
 import { encrypt } from "./security";
 import { Sequelize } from "sequelize";
-import { IKeyValue } from "./interfaces";
-import {deprecate} from "util";
+import { IKeyValue, IObjectWithName } from "./interfaces";
 
 interface IRolesPermission {
     roleId: number,
     permissionId: number
 }
+
 class ModelsSynchronizer {
     private async log(sequelize: Sequelize) {
         Object.keys(sequelize.models).map(modelName => console.log(`[DB]: Model "${ modelName }" were synchronized!`));
@@ -28,7 +28,7 @@ class ModelsSynchronizer {
     }
 
     private getListPermissions(PermissionsList: IKeyValue): object[] {
-        let permissionNames: object[] = [];
+        let permissionNames: IObjectWithName[] = [];
         Object.keys(PermissionsList).forEach(key => permissionNames.push({ name: key }));
         return permissionNames;
     }
