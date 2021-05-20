@@ -7,7 +7,7 @@ module.exports = {
     target: 'web',
     context: ROOT_DIR,
     entry: {
-        main: ['@babel/polyfill', './index.js']
+        main: ['@babel/polyfill', './index.ts']
     },
     output: {
         filename: defineFilename('js'),
