@@ -54,6 +54,8 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
                 await createDevice(device, user.id);
 
                 res.status(200).json({ token: await create({ userId: user.id }) });
+            } else {
+                next(new Exception(400, "Password mismatch"));
             }
         } else
             next(new Exception(400, "User already exists"));
@@ -161,7 +163,6 @@ export async function registerDevice(req: Request, res: Response, next: NextFunc
         device.browser = req.body.browser;
         verifyCode.code = req.body.code;
         user.id = req.body.userId;
-
         const isUnique = !(await isExistDevice(device, user.id));
         if(isUnique) {
             const isValidCode: boolean = await isUserHasCode(user.id, verifyCode.code);

@@ -1,5 +1,5 @@
 'use strict';
-import { QueryInterface, Sequelize } from "sequelize";
+import { QueryInterface } from "sequelize";
 
 const { INTEGER, STRING, UUID, JSON, ENUM } = require('sequelize');
 const { uploads } = require('../constants');
@@ -7,12 +7,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { queryTypes, statuses } from "../utils/enums";
 
 module.exports = {
-    up: async (queryInterface: QueryInterface, Sequelize: Sequelize) => {
+    up: async (queryInterface: QueryInterface) => {
         await queryInterface.createTable('roles', {
             id: {
                 type: INTEGER,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
+                onDelete: 'cascade'
             },
             name: {
                 type: STRING
@@ -22,7 +23,8 @@ module.exports = {
             id: {
                 type: INTEGER,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
+                onDelete: 'cascade'
             },
             email: {
                 type: STRING
@@ -53,7 +55,8 @@ module.exports = {
             id: {
                 type: INTEGER,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
+                onDelete: 'cascade'
             },
             description: {
                 type: STRING,
@@ -64,7 +67,8 @@ module.exports = {
             id: {
                 type: INTEGER,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
+                onDelete: 'cascade'
             },
             name: {
                 type: STRING
@@ -74,7 +78,8 @@ module.exports = {
             id: {
                 type: INTEGER,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
+                onDelete: 'cascade'
             },
             type: {
                 type: ENUM,
@@ -119,7 +124,8 @@ module.exports = {
             id: {
                 type: INTEGER,
                 primaryKey: true,
-                autoIncrement: true
+                autoIncrement: true,
+                onDelete: 'cascade'
             },
             name: {
                 type: STRING,
@@ -228,7 +234,7 @@ module.exports = {
             }
         });
     },
-    down: async (queryInterface: QueryInterface, Sequelize: Sequelize) => {
+    down: async (queryInterface: QueryInterface) => {
         await queryInterface.dropAllTables();
         // await queryInterface.dropTable('users',{ cascade: true });
         // await queryInterface.dropTable('roles', { cascade: true });

@@ -1,4 +1,4 @@
-import { Model } from "./BaseDB";
+import { Model } from "sequelize";
 
 export interface IBcrypt {
     saltRounds: number,

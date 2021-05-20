@@ -158,15 +158,15 @@ export class Device {
     set ip(ip: string) {
         if(typeof ip === "string") {
             this._ip = ip;
-        }
-        throw new Exception(400, "Parameters isn`t valid");
+        } else
+            throw new Exception(400, "Parameters isn`t valid");
     }
 
     set browser(browser: string) {
         if(typeof browser === "string") {
             this._browser = browser;
-        }
-        throw new Exception(400, "Parameters isn`t valid");
+        } else
+            throw new Exception(400, "Parameters isn`t valid");
     }
 
     createDeviceObject(): object {
@@ -195,6 +195,10 @@ export class VerificationCode {
             this._code = code;
         else
             throw new Exception(400, "Parameters isn`t valid");
+    }
+
+    get code() {
+        return this._code;
     }
 }
 

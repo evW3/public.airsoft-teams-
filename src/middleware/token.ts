@@ -21,7 +21,7 @@ export async function codeToken(userId: number, device: Device | null = null): P
     if(device instanceof Device)
         body = { userId, code, ...device.createDeviceObject() };
     else
-        body = { userId, code, };
+        body = { userId, code };
 
     return jwt.sign(body, tokenData.codesKey, { expiresIn: tokenData.codesExpiresIn });
 }

@@ -1,4 +1,5 @@
 import { sequelize, DataTypes } from '../utils/BaseDB';
+const db = require('./index');
 import { IBlockList } from "../utils/interfaces";
 
 const BlockList = sequelize.define<IBlockList>("block_list", {

@@ -26,7 +26,7 @@ module.exports = {
         await queryInterface.bulkInsert('role_permissions', getListRolesPermissions(PermissionsList, permissions, roles))
         await queryInterface.insert(null, "users", {
             email,
-            password: encryptData.strongPassword,
+            password: encryptData.encryptedPassword,
             password_salt: encryptData.salt,
             roleId: roles[roles.findIndex((item: any) => item.name === 'ADMIN')].id
         });
