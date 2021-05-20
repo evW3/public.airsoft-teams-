@@ -1,5 +1,6 @@
 import {log} from "util";
 import {strict} from "assert";
+import {TokenExpiredError} from "jsonwebtoken";
 
 export class Photo {
     imagePathToLoad: string;
@@ -34,7 +35,7 @@ export class User {
         if(typeof id === "number") {
             this._id = id;
         } else
-            throw "Parameters isn`t valid";
+            throw new Exception(400, "Parameters isn`t valid");
     }
     set login(login: string) {
         if(typeof login === "string") {
@@ -52,25 +53,25 @@ export class User {
         if(typeof password === "string") {
             this._password = password;
         } else
-            throw "Parameters isn`t valid";
+            throw new Exception(400, "Parameters isn`t valid");
     }
     set passwordSalt(passwordSalt: string) {
         if(typeof passwordSalt === "string") {
             this._passwordSalt = passwordSalt;
         } else
-            throw "Parameters isn`t valid";
+            throw new Exception(400, "Parameters isn`t valid");
     }
     set profileImage(profileImage: string) {
         if(typeof profileImage === "string") {
             this._profileImage = profileImage;
         } else
-            throw "Parameters isn`t valid";
+            throw new Exception(400, "Parameters isn`t valid");
     }
     set roleId(roleId: number) {
         if(typeof roleId === "number") {
             this._roleId = roleId;
         } else
-            throw "Parameters isn`t valid";
+            throw new Exception(400, "Parameters isn`t valid");
     }
 
     get id() {
@@ -117,7 +118,7 @@ export class Device {
         if(typeof ip === "string") {
             this._ip = ip;
         }
-        throw "Parameters isn`t valid";
+        throw new Exception(400, "Parameters isn`t valid");
     }
 
     set browser(browser: string) {
@@ -125,6 +126,83 @@ export class Device {
             this._browser = browser;
         }
         throw new Exception(400, "Parameters isn`t valid");
+    }
+
+    createDeviceObject(): object {
+        return {
+            ip: this._ip,
+            browser: this._browser
+        }
+    }
+}
+
+export class VerificationCode {
+    private _code: string;
+
+    set code(code: string) {
+        if(typeof code === "string")
+            this._code = code;
+        else
+            throw new Exception(400, "Parameters isn`t valid");
+    }
+}
+
+export class Team {
+    private _name: string;
+
+    set name(name: string) {
+        if(typeof name === "string")
+            this._name = name
+        else
+            throw new Exception(400,"Parameters isn`t valid");
+    }
+
+    get name() {
+        return this._name;
+    }
+}
+
+export class Query {
+    private _status: string;
+    private _type: string;
+    private _userId: number;
+
+    set status(status: string){
+        if(typeof status === "string")
+            this._status = status;
+        else
+            throw new Exception(400, "Parameters isn`t valid");
+    }
+    set type(type: string){
+        if(typeof type === "string")
+            this._type = type;
+        else
+            throw new Exception(400, "Parameters isn`t valid");
+    }
+    set userId(userId: number){
+        if(typeof userId === "number")
+            this._userId = userId;
+        else
+            throw new Exception(400, "Parameters isn`t valid");
+    }
+
+    get status() {
+        return this._status;
+    }
+    get type() {
+        return this._type;
+    }
+    get userId() {
+        return this._userId;
+    }
+
+    createQueryObject() {
+        return {
+            status: this._status,
+            type: this._type,
+            userId: this._userId
+        }
+
     }
 }
 

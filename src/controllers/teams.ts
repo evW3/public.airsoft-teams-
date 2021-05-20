@@ -1,19 +1,21 @@
-import * as express from "express";
+import { Response, Request, NextFunction } from "express";
 
 import { createTeam, isExistTeam } from "../services/teams";
+import { Exception, Team } from "../utils/classes";
 
-export async function registerTeam(req: express.Request, res: express.Response) {
+export async function registerTeam(req: Request, res: Response, next: NextFunction) {
     try {
-        const { name } = req.body;
-        if(name) {
-            if(!await isExistTeam(name)) {
-                await createTeam(name);
-                res.status(200).json({ message: "Team create successfully" });
-            } else
-                res.status(400).json({ message: "Team with this name already exists" });
+        const team = new Team();
+        team.name = req.body.name;
+        if(!await isExistTeam(team.name)) {
+            await createTeam(team.name);
+            res.status(200).json({ message: "Team create successfully" });
         } else
-            res.status(400).json({ message: "Teams name can`t be empty" });
+            next(new Exception(400, "Team with this name already exists"));
     } catch (e) {
-        res.status(500).json({ error: `Can\`t create team ${ e }` });
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t create team"));
     }
 }

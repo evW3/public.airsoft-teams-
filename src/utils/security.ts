@@ -7,8 +7,8 @@ const bcryptInfo: IBcrypt = config.get('security');
 export async function encrypt(weakPassword: string) {
     const salt: string = await bcrypt.genSalt(bcryptInfo.saltRounds);
     const saltPassword: string = weakPassword + bcryptInfo.globalSalt;
-    const strongPassword: string = await bcrypt.hash(saltPassword, salt);
-    return { strongPassword, salt };
+    const encryptedPassword: string = await bcrypt.hash(saltPassword, salt);
+    return { encryptedPassword, salt };
 }
 
 export async function encryptBySalt(weakPassword: string, userSalt: string): Promise<string> {

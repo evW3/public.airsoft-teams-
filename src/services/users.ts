@@ -35,7 +35,7 @@ export async function getIdByEmail(email: string): Promise<number | null> {
     return user.id;
 }
 
-export async function isUserHasCode(id: string, code: string): Promise<boolean> {
+export async function isUserHasCode(id: number, code: string): Promise<boolean> {
     return await Users.count({
         where: { id },
         include: {
@@ -45,12 +45,12 @@ export async function isUserHasCode(id: string, code: string): Promise<boolean> 
     }) !== 0;
 }
 
-export async function setUserPassword(id: number, password: string, password_salt: string) {
-    await Users.update({ password, password_salt },{ where: { id } });
+export async function setUserPassword(user: User) {
+    await Users.update({ password: user.password, password_salt: user.passwordSalt },{ where: { id: user.id } });
 }
 
-export async function setUserLogin(id: number, login: string) {
-    await Users.update({login}, { where: { id } });
+export async function setUserLogin(user: User) {
+    await Users.update({ login: user.login }, { where: { id: user.id } });
 }
 
 export async function setUserPhoto(id:number, profile_image: string) {

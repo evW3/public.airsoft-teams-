@@ -1,7 +1,9 @@
 import { Queries, Users } from "../models/relations";
+import { Query } from "../utils/classes";
 
-export async function createQuery(query: object) {
-    await Queries.create(query);
+export async function createQuery(query: Query): Promise<number> {
+    const queryInfo = await Queries.create(query.createQueryObject());
+    return queryInfo.id;
 }
 
 export async function isExistQuery(userId: number, type: string, status: string): Promise<boolean> {
