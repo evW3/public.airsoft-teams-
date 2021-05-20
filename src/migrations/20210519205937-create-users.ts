@@ -8,6 +8,16 @@ import { queryTypes, statuses } from "../utils/enums";
 
 module.exports = {
   up: async (queryInterface: QueryInterface, Sequelize: Sequelize) => {
+      await queryInterface.createTable('roles', {
+          id: {
+              type: INTEGER,
+              primaryKey: true,
+              autoIncrement: true
+          },
+          name: {
+              type: STRING
+          }
+      });
       await queryInterface.createTable('users', {
         id: {
             type: INTEGER,
@@ -38,16 +48,6 @@ module.exports = {
                 key: 'id'
             }
         }
-      });
-      await queryInterface.createTable('roles', {
-          id: {
-              type: INTEGER,
-              primaryKey: true,
-              autoIncrement: true
-          },
-          name: {
-              type: STRING
-          }
       });
       await queryInterface.createTable('comments', {
           id: {
@@ -229,17 +229,19 @@ module.exports = {
       });
   },
   down: async (queryInterface: QueryInterface, Sequelize: Sequelize) => {
-    await queryInterface.dropTable('users');
-    await queryInterface.dropTable('roles');
-    await queryInterface.dropTable('team_members');
-    await queryInterface.dropTable('verification_codes');
-    await queryInterface.dropTable('role_permissions');
-    await queryInterface.dropTable('query_params');
-    await queryInterface.dropTable('queries_comments');
-    await queryInterface.dropTable('queries');
-    await queryInterface.dropTable('permissions');
-    await queryInterface.dropTable('devices');
-    await queryInterface.dropTable('comments');
-    await queryInterface.dropTable('block_list');
+      await queryInterface.dropAllTables();
+    // await queryInterface.dropTable('users',{ cascade: true });
+    // await queryInterface.dropTable('roles', { cascade: true });
+    // await queryInterface.dropTable('team_members', { cascade: true });
+    // await queryInterface.dropTable('teams', { cascade: true });
+    // await queryInterface.dropTable('verification_codes', { cascade: true });
+    // await queryInterface.dropTable('role_permissions', { cascade: true });
+    // await queryInterface.dropTable('query_params', { cascade: true });
+    // await queryInterface.dropTable('queries_comments',{ cascade: true });
+    // await queryInterface.dropTable('queries', { cascade: true });
+    // await queryInterface.dropTable('permissions', { cascade: true });
+    // await queryInterface.dropTable('devices', { cascade: true });
+    // await queryInterface.dropTable('comments', { cascade: true });
+    // await queryInterface.dropTable('block_list',{ cascade: true });
   }
 };

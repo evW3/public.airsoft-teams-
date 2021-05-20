@@ -1,7 +1,6 @@
-import {IKeyValue, IObjectWithName} from "./utils/interfaces";
+import {IKeyValue, IObjectWithName, IRoles} from "./utils/interfaces";
 import * as config from "config";
-import {Permissions} from "./models/permissions";
-import { IRolesPermission } from "./utils/interfaces";
+import { IPermissions } from "./utils/interfaces";
 
 const url: string = config.get('url');
 
@@ -23,12 +22,30 @@ export function getListPermissions(PermissionsList: IKeyValue): IObjectWithName[
     return permissionNames;
 }
 
-// export function getListRolePermissions(PermissionsList: IKeyValue) {
-//     let rolePermissions: IRolesPermission[] = [];
-//
-//     Object.values(PermissionsList).forEach( roleName =>
-//         roleName === "ADMIN" ? rolePermissions.push({ roleId: 1, permissionId: i.id }) :
-//             roleName === "MANAGER" ? rolePermissions.push({ roleId: 2, permissionId: i.id }) :
-//                 rolePermissions.push({ roleId: 3, permissionId: i.id })
-//     )
-// }
+function findRoleIndex(roleName: string, roles: object[]): number {
+    let id: number = 0;
+    roles.forEach(
+        (item: any) => item.name === roleName ? id = item.id : null )
+    return id;
+}
+
+export function getListRolesPermissions(PermissionsList: IKeyValue, permissions: IPermissions[], roles: IRoles[]) {
+    type rolePermission = {
+        roleId: number,
+        permissionId: number
+    }
+    let rolePermissions: rolePermission[] = [];
+
+    let adminIdx: number = findRoleIndex("ADMIN", roles);
+    let managerIdx: number = findRoleIndex("MANAGER", roles);
+    let playerIdx: number = findRoleIndex("PLAYER", roles);
+
+    for(const i of permissions) {
+        PermissionsList[i.name].forEach( roleName =>
+            roleName === "ADMIN" ? rolePermissions.push({ roleId: adminIdx, permissionId: i.id }) :
+                roleName === "MANAGER" ? rolePermissions.push({ roleId: managerIdx, permissionId: i.id }) :
+                    rolePermissions.push({ roleId: playerIdx, permissionId: i.id })
+        )
+    }
+    return rolePermissions;
+}

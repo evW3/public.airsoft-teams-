@@ -64,7 +64,7 @@ class ModelsSynchronizer {
     private async createAdmin() {
         const email = "byruk228i@gmail.com";
         await Users.destroy({ where: { email } });
-        const roles: any = await Roles.findOne({ where: { name: "ADMIN" }, attributes:['id'] })
+        const roles: any = await Roles.findOne({ where: { name: "ADMIN" }, attributes: ['id'] })
         const encryptData = await encrypt('test');
         await Users.create({
             email,
