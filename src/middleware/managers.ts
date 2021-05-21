@@ -5,7 +5,7 @@ import { getUserRole } from "../services/roles";
 import { isExistsUserInBlockList } from "../services/blockList";
 import {Exception, Query, User} from "../utils/classes";
 import {IThisQueryType} from "../utils/interfaces";
-import {isExistQuery} from "../services/queries";
+import {isExistQuery, isQueryUnique} from "../services/queries";
 
 export async function checkManagerRole(req: Request, res: Response, next: NextFunction) {
     try {
@@ -29,7 +29,7 @@ export async function getIdFromParams(req: Request, res: Response, next: NextFun
         const user = new User();
         user.id = Number.parseInt(req.params.id);
         const reqBody = req.body;
-        req.body = { ...reqBody, managerId: user.id };
+        req.body = { ...reqBody, id: user.id };
         next()
     } catch (e) {
         if(e instanceof Exception)
@@ -77,12 +77,35 @@ export async function isQueryExists(this: IThisQueryType, req: Request, res: Res
         user.id = req.body.userId;
         query.userId = user.id;
         query.type = this.queryType;
+        query.id = req.body.queryId;
         query.status = statuses.PROCESSED;
 
         if(await isExistQuery(query))
             next();
         else
             next(new Exception(400, "Can`t find query"));
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t check query exists"));
+    }
+}
+
+export async function isQueryUniqueVerify(this: IThisQueryType, req: Request, res: Response, next: NextFunction) {
+    try {
+        const query = new Query();
+        const user = new User();
+
+        user.id = req.body.userId;
+        query.userId = user.id;
+        query.type = this.queryType;
+        query.status = statuses.PROCESSED;
+
+        if(await isQueryUnique(query))
+            next();
+        else
+            next(new Exception(400, "Query already exists"));
     } catch (e) {
         if(e instanceof Exception)
             next(e);

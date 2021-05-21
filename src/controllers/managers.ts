@@ -43,7 +43,7 @@ export async function declineManager(req: Request, res: Response, next: NextFunc
 
 export async function getManagers(req: Request, res: Response, next: NextFunction) {
     try {
-        res.status(200).json({ managers: await getUsersByRole(userRoles.MANAGER) });
+        res.status(200).json(await getUsersByRole(userRoles.MANAGER));
     } catch (e) {
         if(e instanceof Exception)
             next(e);
@@ -54,8 +54,8 @@ export async function getManagers(req: Request, res: Response, next: NextFunctio
 
 export async function getManagerById(req: Request, res: Response, next: NextFunction) {
     try {
-        const { managerId } = req.body;
-        res.status(200).json(await  getUser(managerId));
+        const { id } = req.body;
+        res.status(200).json(await  getUser(id));
     } catch (e) {
         if(e instanceof Exception)
             next(e);

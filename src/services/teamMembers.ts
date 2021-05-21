@@ -1,4 +1,4 @@
-import { TeamMembers } from "../models/relations";
+import {TeamMembers, Teams} from "../models/relations";
 
 export async function createTeamMember(userId: number, teamId: number ) {
     await TeamMembers.create({ userId, teamId });

@@ -87,8 +87,8 @@ export async function removePlayerFromTeam(req: Request, res: Response, next: Ne
 
 export async function getPlayerById(req: Request, res: Response, next: NextFunction) {
     try {
-        const { playerId } = req.body;
-        res.status(200).json(await getUser(playerId));
+        const { id } = req.body;
+        res.status(200).json(await getUser(id));
     } catch (e) {
 
     }

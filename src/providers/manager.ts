@@ -19,6 +19,7 @@ import {
     isQueryExists
 } from "../middleware/managers";
 import {queryTypes} from "../utils/enums";
+import {checkDescription} from "../middleware/players";
 
 const managerRoute = express.Router();
 
@@ -36,6 +37,7 @@ managerRoute.patch(
     verify,
     checkPermission.bind({ permission: 'declineManager' }),
     getUserIdByQuery,
+    checkDescription,
     isQueryExists.bind({ queryType: queryTypes.CHANGE_ROLE }),
     declineManager
 );

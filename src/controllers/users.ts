@@ -24,6 +24,7 @@ import {
     setUserPhoto
 } from "../services/users";
 import { Photo, User, Device, VerificationCode } from "../utils/classes";
+import {getTeamNameByUserId} from "../services/teams";
 
 const url: string = config.get('url');
 
@@ -185,8 +186,10 @@ export async function getUserProfile(req: Request, res: Response, next: NextFunc
     try {
         const user = new User();
         user.id = req.body.userId;
-        res.status(200).json({ user: await getUser(user.id) });
+        //const teamInfo = await getTeamNameByUserId(user.id);
+        res.status(200).json(await getUser(user.id));
     } catch (e) {
+        console.log(e);
         if(e instanceof Exception)
             next(e);
         else
@@ -217,6 +220,7 @@ export async function updateUserProfile(req: Request, res: Response, next: NextF
             if(isValid) {
                 const encryptData = await encrypt(newPassword);
                 user.password = encryptData.encryptedPassword;
+                user.passwordSalt = encryptData.salt;
                 await setUserPassword(user);
             } else
                 next(new Exception(400, "Password isn`t correct"));

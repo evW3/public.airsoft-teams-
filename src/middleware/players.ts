@@ -32,6 +32,7 @@ export async function isExistsQueryVerify(this: IThisQueryType, req: Request, re
 
         query.userId = req.body.playerId;
         query.type = this.queryType;
+        query.id = req.body.queryId;
         query.status = statuses.PROCESSED;
 
         if(await isExistQuery(query)) {

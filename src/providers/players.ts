@@ -11,6 +11,7 @@ import { verify } from "../middleware/token";
 import {checkDescription, getPlayerIdByQueryId, isExistsQueryVerify, isTheSamePlayer} from "../middleware/players";
 import { checkPermission } from "../middleware/protected";
 import { queryTypes } from "../utils/enums";
+import {getIdFromParams} from "../middleware/managers";
 
 const playerRoute = express.Router();
 
@@ -64,6 +65,7 @@ playerRoute.get(
     "/:id",
     verify,
     checkPermission.bind({ permission: 'getPlayerById' }),
+    getIdFromParams,
     getPlayerById
 )
 

@@ -1,10 +1,17 @@
 import * as express from "express";
 
 import { verify } from "../middleware/token";
-import { isPlayerInTeamVerify, checkQueryExists, isExistTeam, isManagerRole } from "../middleware/queries";
+import {
+    isPlayerInTeamVerify,
+    checkQueryExists,
+    isExistTeam,
+    isManagerRole,
+    isNotPlayerInTeamVerify
+} from "../middleware/queries";
 import { createRoleQuery, createJoinTeamQuery, createExitTeamQuery } from "../controllers/queries";
 import { checkPermission } from "../middleware/protected";
 import { queryTypes } from "../utils/enums";
+import {isQueryUniqueVerify} from "../middleware/managers";
 
 const queriesRoute = express.Router();
 
@@ -12,8 +19,8 @@ queriesRoute.post(
     "/change-role",
     verify,
     checkPermission.bind({ permission: 'changeRole' }),
-    isPlayerInTeamVerify,
-    checkQueryExists.bind({ queryType: queryTypes.CHANGE_ROLE }),
+    isQueryUniqueVerify.bind({ queryType: queryTypes.CHANGE_ROLE }),
+    isNotPlayerInTeamVerify,
     isManagerRole,
     createRoleQuery
 );
@@ -23,7 +30,7 @@ queriesRoute.post(
     verify,
     checkPermission.bind({ permission: 'joinTeam' }),
     isExistTeam,
-    checkQueryExists.bind({ queryType: queryTypes.JOIN_TEAM }),
+    isQueryUniqueVerify.bind({ queryType: queryTypes.JOIN_TEAM }),
     createJoinTeamQuery
 );
 

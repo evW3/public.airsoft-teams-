@@ -44,7 +44,7 @@ export async function getUserIdByQuery(req: Request, res: Response, next: NextFu
         if(e instanceof Exception)
             next(e);
         else
-            next(new Exception(500, "Can`t verify query "));
+            next(new Exception(500, "Can`t verify query"));
     }
 }
 
@@ -97,6 +97,22 @@ export async function isPlayerInTeamVerify(req: Request, res: Response, next: Ne
             next();
         } else
             next(new Exception(400, "Player isn`t in team"));
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t verify player team"));
+    }
+}
+
+export async function isNotPlayerInTeamVerify(req: Request, res: Response, next: NextFunction) {
+    try {
+        const user = new User();
+        user.id = req.body.userId;
+        if(!await isPlayerInTeam(user.id)) {
+            next();
+        } else
+            next(new Exception(400, "Player in team"));
     } catch (e) {
         if(e instanceof Exception)
             next(e);

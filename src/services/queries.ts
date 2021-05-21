@@ -7,7 +7,11 @@ export async function createQuery(query: Query): Promise<number> {
 }
 
 export async function isExistQuery(query: Query): Promise<boolean> {
-    return await Queries.count({ where: { type: query.type, status: query.status }, include: [{ model: Users, where: { id: query.userId } }] }) !== 0;
+    return await Queries.count({ where: { type: query.type, status: query.status, id: query.id }, include: [{ model: Users, where: { id: query.userId } }] }) !== 0;
+}
+
+export async function isQueryUnique(query: Query): Promise<boolean> {
+    return await Queries.count({ where: { type: query.type, status: query.status }, include: [{ model: Users, where: { id: query.userId } }] }) === 0;
 }
 
 export async function changeQueryStatus(id: number, status: string) {

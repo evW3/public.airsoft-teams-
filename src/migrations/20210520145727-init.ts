@@ -1,10 +1,10 @@
 'use strict';
-import { QueryInterface } from "sequelize";
+import {QueryInterface} from "sequelize";
+import {v4 as uuidv4} from 'uuid';
+import {queryTypes, statuses} from "../utils/enums";
 
 const { INTEGER, STRING, UUID, ENUM } = require('sequelize');
 const { uploads } = require('../constants');
-import { v4 as uuidv4 } from 'uuid';
-import { queryTypes, statuses } from "../utils/enums";
 
 module.exports = {
     up: async (queryInterface: QueryInterface) => {
@@ -83,7 +83,7 @@ module.exports = {
             },
             type: {
                 type: ENUM,
-                values: [queryTypes.CHANGE_ROLE, queryTypes.JOIN_TEAM, queryTypes.EXIT_FROM_TEAM],
+                values: [queryTypes.CHANGE_ROLE, queryTypes.JOIN_TEAM, queryTypes.EXIT_FROM_TEAM, queryTypes.MOVE_TO_ANOTHER_TEAM],
                 allowNull: false
             },
             status: {

@@ -221,6 +221,7 @@ export class Query {
     private _status: string;
     private _type: string;
     private _userId: number;
+    private _id: number
 
     set status(status: string){
         if(typeof status === "string")
@@ -240,6 +241,12 @@ export class Query {
         else
             throw new Exception(400, "Parameters isn`t valid");
     }
+    set id(id: number){
+        if(typeof id === "number")
+            this._id = id;
+        else
+            throw new Exception(400, "Parameters isn`t valid");
+    }
 
     get status() {
         return this._status;
@@ -249,6 +256,9 @@ export class Query {
     }
     get userId() {
         return this._userId;
+    }
+    get id() {
+        return this._id;
     }
 
     createQueryObject() {
