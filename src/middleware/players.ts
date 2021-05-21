@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 import { Exception, Query } from "../utils/classes";
 import { getUserIdByQueryId } from "../services/users";
-import { statuses } from "../utils/enums";
+import {statuses, userRoles} from "../utils/enums";
 import { isExistQuery } from "../services/queries";
 import {IThisQueryType} from "../utils/interfaces";
+import {getUserRole} from "../services/roles";
 
 export async function getPlayerIdByQueryId(req: Request, res: Response, next: NextFunction) {
     try {
@@ -56,6 +57,24 @@ export async function checkDescription(req: Request, res: Response, next: NextFu
         if(e instanceof Exception)
             next(e);
         else
-            next(new Exception(500, "Can`t getPlayerIdByQueryId"));
+            next(new Exception(500, "Can`t check description"));
+    }
+}
+
+export async function isTheSamePlayer(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { playerId, userId } = req.body;
+        if(userRoles.PLAYER === await getUserRole(userId)) {
+            if(playerId === userId)
+                next();
+            else
+                next(new Exception(403, "Can`t change user query status"));
+        } else
+            next();
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t check user"));
     }
 }

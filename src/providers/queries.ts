@@ -22,7 +22,6 @@ queriesRoute.post(
     "/join-team",
     verify,
     checkPermission.bind({ permission: 'joinTeam' }),
-    isPlayerInTeamVerify,
     isExistTeam,
     checkQueryExists.bind({ queryType: queryTypes.JOIN_TEAM }),
     createJoinTeamQuery

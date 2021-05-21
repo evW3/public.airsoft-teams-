@@ -1,7 +1,8 @@
 import { Response, Request, NextFunction } from "express";
 
-import { createTeam, isExistTeam } from "../services/teams";
+import { createTeam, getTeamMembers, isExistTeam } from "../services/teams";
 import { Exception, Team } from "../utils/classes";
+import {getUsersInTeam} from "../services/users";
 
 export async function registerTeam(req: Request, res: Response, next: NextFunction) {
     try {
@@ -20,13 +21,25 @@ export async function registerTeam(req: Request, res: Response, next: NextFuncti
     }
 }
 
-export async function teamMembers(req: Request, res: Response, next: NextFunction) {
+export async function getTeamPlayers(req: Request, res: Response, next: NextFunction) {
     try {
-
+        const { name } = req.body;
+        res.status(200).json(await getTeamMembers(name));
     } catch (e) {
         if(e instanceof Exception)
             next(e);
         else
-            next(new Exception(500, "Can`t create team"));
+            next(new Exception(500, "Can`t get team members"));
+    }
+}
+
+export async function getPlayersWhoIntoTeam(req: Request, res: Response, next: NextFunction) {
+    try {
+        res.status(200).json(await getUsersInTeam());
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t get players"));
     }
 }

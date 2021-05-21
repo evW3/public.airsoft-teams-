@@ -8,10 +8,9 @@ import {
     removePlayerFromTeam
 } from "../controllers/players";
 import { verify } from "../middleware/token";
-import {checkDescription, getPlayerIdByQueryId, isExistsQueryVerify} from "../middleware/players";
+import {checkDescription, getPlayerIdByQueryId, isExistsQueryVerify, isTheSamePlayer} from "../middleware/players";
 import { checkPermission } from "../middleware/protected";
 import { queryTypes } from "../utils/enums";
-import {getUsersInTeam} from "../services/users";
 
 const playerRoute = express.Router();
 
@@ -46,8 +45,9 @@ playerRoute.post(
 playerRoute.post(
     "/decline-exit-team",
     verify,
-    checkPermission.bind({ permission: 'acceptExitTeam' }),
+    checkPermission.bind({ permission: 'declineExitTeam' }),
     getPlayerIdByQueryId,
+    isTheSamePlayer,
     isExistsQueryVerify.bind({ queryType: queryTypes.EXIT_FROM_TEAM }),
     declineExitFromTeam
 );
@@ -61,9 +61,10 @@ playerRoute.delete(
 );
 
 playerRoute.get(
-    "/",
+    "/:id",
     verify,
-    getUsersInTeam
+    checkPermission.bind({ permission: 'getPlayerById' }),
+
 )
 
 export { playerRoute };

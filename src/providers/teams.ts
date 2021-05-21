@@ -2,9 +2,8 @@ import * as express from "express";
 
 import { verify } from "../middleware/token";
 import { checkPermission } from "../middleware/protected";
-import { registerTeam } from "../controllers/teams";
-import { getTeamMembers } from "../services/teams";
-import {parseParameterName} from "../middleware/teams";
+import {getPlayersWhoIntoTeam, getTeamPlayers, registerTeam} from "../controllers/teams";
+import { parseParameterName } from "../middleware/teams";
 
 const teamsRout = express.Router();
 
@@ -18,9 +17,16 @@ teamsRout.post(
 teamsRout.get(
     "/:name",
     verify,
-    checkPermission.bind({ permission: '' }),
+    checkPermission.bind({ permission: 'getTeamMembers' }),
     parseParameterName,
-    getTeamMembers
+    getTeamPlayers
 )
+
+teamsRout.get(
+    "/",
+    verify,
+    checkPermission.bind({ permission: 'getPlayersWhoIntoTeam' }),
+    getPlayersWhoIntoTeam
+);
 
 export { teamsRout };
