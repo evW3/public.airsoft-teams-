@@ -6,7 +6,7 @@ import {
     checkQueryExists,
     isExistTeam,
     isManagerRole,
-    isNotPlayerInTeamVerify
+    isNotPlayerInTeamVerify, parseUserId
 } from "../middleware/queries";
 import { createRoleQuery, createJoinTeamQuery, createExitTeamQuery } from "../controllers/queries";
 import { checkPermission } from "../middleware/protected";
@@ -38,6 +38,7 @@ queriesRoute.post(
     "/exit-from-team",
     verify,
     checkPermission.bind({ permission: 'exitTeam' }),
+    parseUserId,
     isPlayerInTeamVerify,
     checkQueryExists.bind({ queryType: queryTypes.EXIT_FROM_TEAM }),
     createExitTeamQuery

@@ -92,11 +92,25 @@ export async function checkQueryExists(this: IThisQueryType, req: Request, res: 
 export async function isPlayerInTeamVerify(req: Request, res: Response, next: NextFunction) {
     try {
         const user = new User();
-        user.id = req.body.userId;
+        user.id = req.body.id;
         if(await isPlayerInTeam(user.id)) {
             next();
         } else
             next(new Exception(400, "Player isn`t in team"));
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t verify player team"));
+    }
+}
+
+export async function parseUserId(req: Request, res: Response, next: NextFunction) {
+    try {
+        const user = new User();
+        user.id = req.body.userId;
+        req.body = { ...req.body, id: user.id };
+        next();
     } catch (e) {
         if(e instanceof Exception)
             next(e);

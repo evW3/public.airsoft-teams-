@@ -78,6 +78,7 @@ export async function removePlayerFromTeam(req: Request, res: Response, next: Ne
         user.email = await getEmailByUserId(user.id);
         await deleteTeamMember(user.id);
         await sendSimpleMail(`${ description }`, "Исключение из команды", user.email);
+        res.status(200).json({ message: "Player successfully moved" });
     } catch (e) {
         if(e instanceof Exception)
             next(e);

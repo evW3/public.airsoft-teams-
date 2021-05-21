@@ -4,7 +4,6 @@ import { Exception } from "../utils/classes";
 export function parseParameterName(req: Request, res: Response, next: NextFunction) {
     try {
         const { name } = req.params;
-        console.log(name);
         if(name && typeof name === "string") {
             req.body = { ...req.body, name };
             next();

@@ -18,6 +18,7 @@ import {
 import { checkPermission } from "../middleware/protected";
 import { queryTypes } from "../utils/enums";
 import { getIdFromParams } from "../middleware/managers";
+import {isPlayerInTeamVerify} from "../middleware/queries";
 
 const playerRoute = express.Router();
 
@@ -64,6 +65,8 @@ playerRoute.delete(
     verify,
     checkPermission.bind({ permission: 'moveUserFromTeam' }),
     checkDescription,
+    playerConcatenateId,
+    isPlayerInTeamVerify,
     removePlayerFromTeam
 );
 
@@ -86,7 +89,7 @@ playerRoute.post(
     blockPlayer
 )
 
-playerRoute.post(
+playerRoute.delete(
     "/unblock",
     verify,
     checkPermission.bind({ permission: 'unblockPlayer' }),
