@@ -85,7 +85,7 @@ export async function checkQueryExists(this: IThisQueryType, req: Request, res: 
         if(e instanceof Exception)
             next(e);
         else
-            next(new Exception(500, "Can`t verify enter team"));
+            next(new Exception(500, "Can`t find user query"));
     }
 }
 

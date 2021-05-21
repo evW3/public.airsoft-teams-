@@ -5,7 +5,7 @@ export async function createTeamMember(userId: number, teamId: number ) {
 }
 
 export async function isPlayerInTeam(userId: number): Promise<boolean> {
-    return await TeamMembers.count({where: {userId}}) !== 0;
+    return await TeamMembers.count({where: { userId }}) !== 0;
 }
 
 export async function deleteTeamMember(userId: number) {
