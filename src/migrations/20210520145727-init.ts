@@ -83,7 +83,7 @@ module.exports = {
             },
             type: {
                 type: ENUM,
-                values: [queryTypes.CHANGE_ROLE, queryTypes.JOIN_TEAM],
+                values: [queryTypes.CHANGE_ROLE, queryTypes.JOIN_TEAM, queryTypes.EXIT_FROM_TEAM],
                 allowNull: false
             },
             status: {

@@ -115,6 +115,10 @@ export interface IThisProtected {
     permission: string
 }
 
+export interface IThisQueryType {
+    queryType: string
+}
+
 export interface IBody {
     email: string,
     userId: number

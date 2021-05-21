@@ -47,3 +47,24 @@ export async function createJoinTeamQuery(req: Request, res: Response, next: Nex
             next(new Exception(500, "Can`t create query"));
     }
 }
+
+export async function createExitTeamQuery(req: Request, res: Response, next: NextFunction) {
+    try {
+        const user = new User();
+        const query = new Query();
+
+        user.id = req.body.userId;
+
+        query.userId = user.id;
+        query.type = queryTypes.EXIT_FROM_TEAM;
+        query.status = statuses.PROCESSED;
+
+        await createQuery(query);
+        res.status(200).json({ message: "Exit query was created" });
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t create query"));
+    }
+}

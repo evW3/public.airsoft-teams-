@@ -1,9 +1,11 @@
 import * as express from 'express';
 
-import { acceptJoinTeam } from "../controllers/players";
+import { acceptJoinTeam, declineJoinTeam } from "../controllers/players";
 import { verify } from "../middleware/token";
-import { getPlayerIdByQueryId, isExistsQueryVerify } from "../middleware/players";
+import {checkDescription, getPlayerIdByQueryId, isExistsQueryVerify} from "../middleware/players";
 import { checkPermission } from "../middleware/protected";
+import { queryTypes } from "../utils/enums";
+
 const playerRoute = express.Router();
 
 playerRoute.post(
@@ -11,7 +13,7 @@ playerRoute.post(
     verify,
     checkPermission.bind({ permission: 'acceptJoinTeam' }),
     getPlayerIdByQueryId,
-    isExistsQueryVerify,
+    isExistsQueryVerify.bind({ queryType: queryTypes.JOIN_TEAM }),
     acceptJoinTeam
 );
 
@@ -19,6 +21,14 @@ playerRoute.post(
   "/decline-join-team",
     verify,
     checkPermission.bind({ permission: 'declineJoinTeam' }),
+    getPlayerIdByQueryId,
+    isExistsQueryVerify.bind({ queryType: queryTypes.JOIN_TEAM }),
+    checkDescription,
+    declineJoinTeam
+);
+
+playerRoute.post(
+    "/"
 );
 
 export { playerRoute };

@@ -1,6 +1,6 @@
 import {DataTypes, sequelize} from "../utils/BaseDB";
 import {IQueries} from "../utils/interfaces";
-import { statuses, queryTypes } from "../utils/enums";
+import {queryTypes, statuses} from "../utils/enums";
 
 const Queries = sequelize.define<IQueries>("queries", {
     id: {
@@ -10,7 +10,7 @@ const Queries = sequelize.define<IQueries>("queries", {
     },
     type: {
         type: DataTypes.ENUM,
-        values: [queryTypes.CHANGE_ROLE, queryTypes.JOIN_TEAM],
+        values: [queryTypes.CHANGE_ROLE, queryTypes.JOIN_TEAM, queryTypes.EXIT_FROM_TEAM],
         allowNull: false
     },
     status: {
