@@ -10,8 +10,15 @@ import {
     blockManager,
     unblockManager
 } from "../controllers/managers";
-import { changeRoleQueryVerify } from "../middleware/queries";
-import { checkManagerRole, getIdFromParams, blockManagerVerify, unblockManagerVerify } from "../middleware/managers";
+import { getUserIdByQuery } from "../middleware/queries";
+import {
+    checkManagerRole,
+    getIdFromParams,
+    blockManagerVerify,
+    unblockManagerVerify,
+    isQueryExists
+} from "../middleware/managers";
+import {queryTypes} from "../utils/enums";
 
 const managerRoute = express.Router();
 
@@ -19,7 +26,8 @@ managerRoute.patch(
     "/accept-manager",
     verify,
     checkPermission.bind({ permission: 'activateManager' }),
-    changeRoleQueryVerify,
+    getUserIdByQuery,
+    isQueryExists.bind({ queryType: queryTypes.CHANGE_ROLE }),
     acceptManager
 );
 
@@ -27,7 +35,8 @@ managerRoute.patch(
     "/decline-manager",
     verify,
     checkPermission.bind({ permission: 'declineManager' }),
-    changeRoleQueryVerify,
+    getUserIdByQuery,
+    isQueryExists.bind({ queryType: queryTypes.CHANGE_ROLE }),
     declineManager
 );
 

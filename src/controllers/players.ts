@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 import { changeQueryStatus } from "../services/queries";
 import { statuses } from "../utils/enums";
-import { Exception } from "../utils/classes";
-import {createTeamMember, deleteTeamMember} from "../services/teamMembers";
+import {Exception, User} from "../utils/classes";
+import { createTeamMember, deleteTeamMember } from "../services/teamMembers";
 import { getQueryParameter } from "../services/queryParams";
 import { createComment } from "../services/comments";
 import { createQueriesComments } from "../services/queriesComments";
+import { getEmailByUserId } from "../services/users";
+import {sendSimpleMail} from "../utils/smtp";
 
 export async function acceptJoinTeam(req: Request, res: Response, next: NextFunction) {
     try {
@@ -40,15 +42,45 @@ export async function declineJoinTeam(req: Request, res: Response, next: NextFun
     }
 }
 
-export async function exitFromTeam(req: Request, res: Response, next: NextFunction) {
+export async function acceptExitFromTeam(req: Request, res: Response, next: NextFunction) {
     try {
-        const { playerId } = req.body;
+        const { playerId, queryId } = req.body;
+        await changeQueryStatus(queryId, statuses.ACCEPTED);
         await deleteTeamMember(playerId);
         res.status(200).json({ message: "Player successfully moved" })
     } catch (e) {
         if(e instanceof Exception)
             next(e);
         else
-            next(new Exception(500, "Can`t move out player"));
+            next(new Exception(500, "Can`t accept user query"));
+    }
+}
+
+export async function declineExitFromTeam(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { queryId } = req.body;
+        await changeQueryStatus(queryId, statuses.DECLINE);
+        res.status(200).json({ message: "Query successfully declined" });
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t decline user query"));
+    }
+}
+
+export async function removePlayerFromTeam(req: Request, res: Response, next: NextFunction) {
+    try {
+        const user = new User();
+        const { description } = req.body;
+        user.id = req.body.userId;
+        user.email = await getEmailByUserId(user.id);
+        await deleteTeamMember(user.id);
+        await sendSimpleMail(`${ description }`, "Исключение из команды", user.email);
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t decline user query"));
     }
 }

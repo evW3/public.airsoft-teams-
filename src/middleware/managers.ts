@@ -1,9 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
-import { userRoles } from "../utils/enums";
+import {statuses, userRoles} from "../utils/enums";
 import { getUserRole } from "../services/roles";
 import { isExistsUserInBlockList } from "../services/blockList";
-import { Exception, User } from "../utils/classes";
+import {Exception, Query, User} from "../utils/classes";
+import {IThisQueryType} from "../utils/interfaces";
+import {isExistQuery} from "../services/queries";
 
 export async function checkManagerRole(req: Request, res: Response, next: NextFunction) {
     try {
@@ -59,6 +61,28 @@ export async function unblockManagerVerify(req: Request, res: Response, next: Ne
              next();
          } else
              next(new Exception(400, "User not found in ban list"));
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t unblock manager "));
+    }
+}
+
+export async function isQueryExists(this: IThisQueryType, req: Request, res: Response, next: NextFunction) {
+    try {
+        const query = new Query();
+        const user = new User();
+
+        user.id = req.body.userId;
+        query.userId = user.id;
+        query.type = this.queryType;
+        query.status = statuses.PROCESSED;
+
+        if(await isExistQuery(query))
+            next();
+        else
+            next(new Exception(400, "Can`t find query"));
     } catch (e) {
         if(e instanceof Exception)
             next(e);

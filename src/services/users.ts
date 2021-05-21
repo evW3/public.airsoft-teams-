@@ -83,3 +83,10 @@ export async function getUserIdByQueryId(queryId: number): Promise<number | null
         return null;
     return user.id;
 }
+
+export async function getUsersInTeam() {
+    return await Users.findAll({
+        include: [{ model: Teams, attributes: ['name'] }],
+        attributes: ['login', 'email', 'id']
+    })
+}

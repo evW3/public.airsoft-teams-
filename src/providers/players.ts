@@ -1,10 +1,17 @@
 import * as express from 'express';
 
-import { acceptJoinTeam, declineJoinTeam } from "../controllers/players";
+import {
+    acceptExitFromTeam,
+    acceptJoinTeam,
+    declineExitFromTeam,
+    declineJoinTeam,
+    removePlayerFromTeam
+} from "../controllers/players";
 import { verify } from "../middleware/token";
 import {checkDescription, getPlayerIdByQueryId, isExistsQueryVerify} from "../middleware/players";
 import { checkPermission } from "../middleware/protected";
 import { queryTypes } from "../utils/enums";
+import {getUsersInTeam} from "../services/users";
 
 const playerRoute = express.Router();
 
@@ -28,7 +35,35 @@ playerRoute.post(
 );
 
 playerRoute.post(
-    "/"
+    "/accept-exit-team",
+    verify,
+    checkPermission.bind({ permission: 'acceptExitTeam' }),
+    getPlayerIdByQueryId,
+    isExistsQueryVerify.bind({ queryType: queryTypes.EXIT_FROM_TEAM }),
+    acceptExitFromTeam
 );
+
+playerRoute.post(
+    "/decline-exit-team",
+    verify,
+    checkPermission.bind({ permission: 'acceptExitTeam' }),
+    getPlayerIdByQueryId,
+    isExistsQueryVerify.bind({ queryType: queryTypes.EXIT_FROM_TEAM }),
+    declineExitFromTeam
+);
+
+playerRoute.delete(
+    "/move-user",
+    verify,
+    checkPermission.bind({ permission: 'moveUserFromTeam' }),
+    checkDescription,
+    removePlayerFromTeam
+);
+
+playerRoute.get(
+    "/",
+    verify,
+    getUsersInTeam
+)
 
 export { playerRoute };

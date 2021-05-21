@@ -19,3 +19,14 @@ export async function registerTeam(req: Request, res: Response, next: NextFuncti
             next(new Exception(500, "Can`t create team"));
     }
 }
+
+export async function teamMembers(req: Request, res: Response, next: NextFunction) {
+    try {
+
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t create team"));
+    }
+}

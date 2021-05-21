@@ -14,6 +14,7 @@ export const PermissionsList: IKeyValue = {
     unblockManager: [ 'ADMIN' ],
     declineManager: [ 'ADMIN' ],
     registerTeam: [ 'ADMIN' ],
+    moveUserFromTeam: [ 'ADMIN', 'MANAGER' ],
     acceptJoinTeam: [ 'ADMIN', 'MANAGER' ],
     declineJoinTeam: [ 'ADMIN', 'MANAGER' ],
     changeRole: ['PLAYER'],
