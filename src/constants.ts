@@ -13,7 +13,11 @@ export const PermissionsList: IKeyValue = {
     blockManager: [ 'ADMIN' ],
     unblockManager: [ 'ADMIN' ],
     declineManager: [ 'ADMIN' ],
-    registerTeam: [ 'ADMIN' ]
+    registerTeam: [ 'ADMIN' ],
+    acceptJoinTeam: [ 'ADMIN', 'MANAGER' ],
+    declineJoinTeam: [ 'ADMIN', 'MANAGER' ],
+    changeRole: ['PLAYER'],
+    joinTeam: ['PLAYER']
 }
 
 export function getListPermissions(PermissionsList: IKeyValue): IObjectWithName[] {

@@ -2,10 +2,11 @@ import { NextFunction, Request, Response } from "express";
 
 import { isExistQuery } from "../services/queries";
 import { getUserIdByQueryId } from "../services/users";
-import { isTeamHaveUser } from "../services/teams";
+import { isPlayerInTeam } from "../services/teamMembers";
 import { statuses, queryTypes, userRoles } from "../utils/enums";
 import { getUserRole } from "../services/roles";
 import { Exception, Query, User } from "../utils/classes";
+import { isExistTeamById } from "../services/teams";
 
 export async function createRoleQueryVerify(req: Request, res: Response, next: NextFunction) {
     try {
@@ -61,21 +62,27 @@ export async function createEnterTeamQueryVerify(req: Request, res: Response, ne
         const query = new Query();
 
         user.id = req.body.userId;
-        query.userId = user.id;
-        query.type = queryTypes.ENTER_TEAM;
-        query.status = statuses.PROCESSED;
+        const { teamId } = req.body;
+        if(teamId && typeof teamId === "number" && await isExistTeamById(teamId)) {
+            if(!await isPlayerInTeam(user.id)) {
 
-        if(!await isTeamHaveUser(user.id) ) {
-            if(!await isExistQuery(query)) {
-                next();
+                query.userId = user.id;
+                query.type = queryTypes.JOIN_TEAM;
+                query.status = statuses.PROCESSED;
+
+                if(!await isExistQuery(query)) {
+                    next();
+                } else
+                    next(new Exception(400, "Query already exists"));
             } else
-                next(new Exception(400, "Query already exists"));
+                next(new Exception(400, "User already in team"));
         } else
-            next(new Exception(400, "User already in team"));
+            next(new Exception(400, "Team doesn`t exists"));
     } catch (e) {
+        console.log(e)
         if(e instanceof Exception)
             next(e);
         else
-            next(new Exception(500, "Can`t verify enter team "));
+            next(new Exception(500, "Can`t verify enter team"));
     }
 }

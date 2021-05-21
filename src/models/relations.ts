@@ -51,5 +51,6 @@ export {
     Comments,
     QueriesComments,
     BlockList,
-    TeamMembers
+    TeamMembers,
+    QueryParams
 };

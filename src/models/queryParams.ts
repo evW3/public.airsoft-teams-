@@ -7,8 +7,8 @@ const QueryParams = sequelize.define<IQueryParams>("query_params", {
         primaryKey: true,
         autoIncrement: true
     },
-    parameters: {
-        type: DataTypes.JSON
+    parameter: {
+        type: DataTypes.STRING
     }
 }, {
     timestamps: false,

@@ -1,5 +1,4 @@
 import { Roles, Users } from "../models/relations";
-import { User } from "../utils/classes";
 
 export async function getRoleIdByName(name: string): Promise<number | null> {
     const role = await Roles.findOne({ where: { name }, attributes: ['id'] ,raw: true });

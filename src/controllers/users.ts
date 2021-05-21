@@ -24,7 +24,6 @@ import {
     setUserPhoto
 } from "../services/users";
 import { Photo, User, Device, VerificationCode } from "../utils/classes";
-import {TokenExpiredError} from "jsonwebtoken";
 
 const url: string = config.get('url');
 

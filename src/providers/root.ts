@@ -4,6 +4,7 @@ import { usersRoute } from "./users";
 import { managerRoute } from "./manager";
 import { teamsRout } from "./teams";
 import { queriesRoute } from "./queries";
+import { playerRoute } from "./players";
 
 const defaultRoutes = express.Router();
 
@@ -12,5 +13,6 @@ defaultRoutes.use('/users', usersRoute);
 defaultRoutes.use('/managers', managerRoute);
 defaultRoutes.use('/teams', teamsRout);
 defaultRoutes.use('/queries', queriesRoute);
+defaultRoutes.use('/players', playerRoute);
 
 export { defaultRoutes };

@@ -1,7 +1,7 @@
 'use strict';
 import { QueryInterface } from "sequelize";
 
-const { INTEGER, STRING, UUID, JSON, ENUM } = require('sequelize');
+const { INTEGER, STRING, UUID, ENUM } = require('sequelize');
 const { uploads } = require('../constants');
 import { v4 as uuidv4 } from 'uuid';
 import { queryTypes, statuses } from "../utils/enums";
@@ -83,7 +83,7 @@ module.exports = {
             },
             type: {
                 type: ENUM,
-                values: [queryTypes.CHANGE_ROLE, queryTypes.ENTER_TEAM],
+                values: [queryTypes.CHANGE_ROLE, queryTypes.JOIN_TEAM],
                 allowNull: false
             },
             status: {
@@ -172,8 +172,8 @@ module.exports = {
                 primaryKey: true,
                 autoIncrement: true
             },
-            parameters: {
-                type: JSON
+            parameter: {
+                type: STRING
             },
             queryId: {
                 type: INTEGER,

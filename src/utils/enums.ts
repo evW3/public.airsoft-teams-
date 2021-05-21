@@ -6,7 +6,7 @@ export enum statuses {
 
 export enum queryTypes {
     CHANGE_ROLE = 'CHANGE_ROLE',
-    ENTER_TEAM = 'ENTER_TEAM'
+    JOIN_TEAM = 'JOIN_TEAM'
 }
 
 export enum userRoles {

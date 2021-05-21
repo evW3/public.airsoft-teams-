@@ -10,7 +10,7 @@ const Queries = sequelize.define<IQueries>("queries", {
     },
     type: {
         type: DataTypes.ENUM,
-        values: [queryTypes.CHANGE_ROLE, queryTypes.ENTER_TEAM],
+        values: [queryTypes.CHANGE_ROLE, queryTypes.JOIN_TEAM],
         allowNull: false
     },
     status: {

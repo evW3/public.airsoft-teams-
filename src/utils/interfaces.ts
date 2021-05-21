@@ -104,7 +104,7 @@ export interface IQueriesComments extends Model {
 
 export interface IQueryParams extends Model {
     id: number,
-    parameters: object
+    parameter: string
 }
 
 export interface IKeyValue {
@@ -120,8 +120,9 @@ export interface IBody {
     userId: number
 }
 
-export interface ITest {
-    body: IBody
+export interface ITeam {
+    name?: string,
+    id?: string
 }
 
 export interface IObjectWithName {

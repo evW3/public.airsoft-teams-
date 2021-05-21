@@ -1,5 +1,5 @@
 import { Devices } from "../models/relations";
-import {Device} from "../utils/classes";
+import { Device } from "../utils/classes";
 
 export async function createDevice(device: Device, userId: number) {
     await Devices.create({ ... device.createDeviceObject(), userId });
