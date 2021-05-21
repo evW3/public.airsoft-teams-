@@ -4,7 +4,7 @@ import {
     acceptExitFromTeam,
     acceptJoinTeam,
     declineExitFromTeam,
-    declineJoinTeam,
+    declineJoinTeam, getPlayerById,
     removePlayerFromTeam
 } from "../controllers/players";
 import { verify } from "../middleware/token";
@@ -64,7 +64,7 @@ playerRoute.get(
     "/:id",
     verify,
     checkPermission.bind({ permission: 'getPlayerById' }),
-
+    getPlayerById
 )
 
 export { playerRoute };

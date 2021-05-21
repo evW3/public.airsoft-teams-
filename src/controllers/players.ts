@@ -6,7 +6,7 @@ import { createTeamMember, deleteTeamMember } from "../services/teamMembers";
 import { getQueryParameter } from "../services/queryParams";
 import { createComment } from "../services/comments";
 import { createQueriesComments } from "../services/queriesComments";
-import { getEmailByUserId } from "../services/users";
+import {getEmailByUserId, getUser} from "../services/users";
 import {sendSimpleMail} from "../utils/smtp";
 
 export async function acceptJoinTeam(req: Request, res: Response, next: NextFunction) {
@@ -73,7 +73,7 @@ export async function removePlayerFromTeam(req: Request, res: Response, next: Ne
     try {
         const user = new User();
         const { description } = req.body;
-        user.id = req.body.userId;
+        user.id = req.body.playerId;
         user.email = await getEmailByUserId(user.id);
         await deleteTeamMember(user.id);
         await sendSimpleMail(`${ description }`, "Исключение из команды", user.email);
@@ -82,5 +82,14 @@ export async function removePlayerFromTeam(req: Request, res: Response, next: Ne
             next(e);
         else
             next(new Exception(500, "Can`t decline user query"));
+    }
+}
+
+export async function getPlayerById(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { playerId } = req.body;
+        res.status(200).json(await getUser(playerId));
+    } catch (e) {
+
     }
 }
