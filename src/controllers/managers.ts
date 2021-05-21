@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { getUsersByRole, changeUserRole, getUser } from "../services/users"
+import {getUsersByRole, changeUserRole, getUser, getEmailByUserId} from "../services/users"
 import { changeQueryStatus } from "../services/queries";
 import { statuses, userRoles } from "../utils/enums";
 import { getIdRole } from "../services/roles";
@@ -8,6 +8,7 @@ import { blockUser, unblockUser } from "../services/blockList";
 import { createComment } from "../services/comments";
 import { createQueriesComments } from "../services/queriesComments";
 import { Exception } from "../utils/classes";
+import {sendSimpleMail} from "../utils/smtp";
 
 export async function acceptManager(req: Request, res: Response, next: NextFunction) {
     try {
@@ -67,7 +68,9 @@ export async function getManagerById(req: Request, res: Response, next: NextFunc
 export async function blockManager(req: Request, res: Response, next: NextFunction) {
     try {
         const { managerId, description } = req.body;
+        const email = await getEmailByUserId(managerId);
         await blockUser(managerId, description);
+        await sendSimpleMail(description, "Blocked account", email);
         res.status(200).json({ message: "Manager was blocked" });
     } catch (e) {
         if(e instanceof Exception)
@@ -79,8 +82,10 @@ export async function blockManager(req: Request, res: Response, next: NextFuncti
 
 export async function unblockManager(req: Request, res: Response, next: NextFunction) {
     try {
-        const { managerId } = req.body;
+        const { managerId, description} = req.body;
         await unblockUser(managerId);
+        const email = await getEmailByUserId(managerId);
+        await sendSimpleMail(description, "Unblocked account", email);
         res.status(200).json({ message: "Manager was unblock" });
     } catch (e) {
         if(e instanceof Exception)

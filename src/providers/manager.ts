@@ -64,6 +64,7 @@ managerRoute.post(
     checkPermission.bind({ permission: 'blockManager' }),
     checkManagerRole,
     blockManagerVerify,
+    checkDescription,
     blockManager
 )
 
@@ -73,6 +74,7 @@ managerRoute.delete(
     checkPermission.bind({ permission: 'unblockManager' }),
     checkManagerRole,
     unblockManagerVerify,
+    checkDescription,
     unblockManager
 )
 

@@ -8,6 +8,7 @@ import { createComment } from "../services/comments";
 import { createQueriesComments } from "../services/queriesComments";
 import {getEmailByUserId, getUser} from "../services/users";
 import {sendSimpleMail} from "../utils/smtp";
+import {blockUser, unblockUser} from "../services/blockList";
 
 export async function acceptJoinTeam(req: Request, res: Response, next: NextFunction) {
     try {
@@ -81,7 +82,7 @@ export async function removePlayerFromTeam(req: Request, res: Response, next: Ne
         if(e instanceof Exception)
             next(e);
         else
-            next(new Exception(500, "Can`t decline user query"));
+            next(new Exception(500, "Can`t remove user from team"));
     }
 }
 
@@ -90,6 +91,39 @@ export async function getPlayerById(req: Request, res: Response, next: NextFunct
         const { id } = req.body;
         res.status(200).json(await getUser(id));
     } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t get user by id"));
+    }
+}
 
+export async function blockPlayer(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { playerId, description } = req.body;
+        const email = await getEmailByUserId(playerId);
+        await blockUser(playerId, description);
+        await sendSimpleMail(description, "Blocked account", email);
+        res.status(200).json({ message: "Player was blocked" });
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t block player"));
+    }
+}
+
+export async function unBlockPlayer(req: Request, res: Response, next: NextFunction) {
+    try {
+        const { playerId, description} = req.body;
+        await unblockUser(playerId);
+        const email = await getEmailByUserId(playerId);
+        await sendSimpleMail(description, "Unblocked account", email);
+        res.status(200).json({ message: "Player was unblock" });
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t unblock player"));
     }
 }

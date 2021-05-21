@@ -25,6 +25,7 @@ import {
 } from "../services/users";
 import { Photo, User, Device, VerificationCode } from "../utils/classes";
 import {getTeamNameByUserId} from "../services/teams";
+import {isExistsUserInBlockList} from "../services/blockList";
 
 const url: string = config.get('url');
 
@@ -72,10 +73,10 @@ export async function signIn(req: Request, res: Response, next: NextFunction) {
         const user = new User();
         user.password = req.body.password;
         user.email = req.body.email;
-
+        user.id = await getIdByEmail(user.email);
         const isExists: boolean = (await isEmailExist(user.email));
 
-        if(isExists) {
+        if(isExists && !(await isExistsUserInBlockList(user.id))) {
             user.passwordSalt = await getUserSalt(user.email);
 
             const encryptPassword: string = await encryptBySalt(user.password, user.passwordSalt);

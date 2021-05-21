@@ -2,16 +2,22 @@ import * as express from 'express';
 
 import {
     acceptExitFromTeam,
-    acceptJoinTeam,
+    acceptJoinTeam, blockPlayer,
     declineExitFromTeam,
     declineJoinTeam, getPlayerById,
-    removePlayerFromTeam
+    removePlayerFromTeam, unBlockPlayer
 } from "../controllers/players";
 import { verify } from "../middleware/token";
-import {checkDescription, getPlayerIdByQueryId, isExistsQueryVerify, isTheSamePlayer} from "../middleware/players";
+import {
+    checkDescription,
+    checkPlayerRole,
+    getPlayerIdByQueryId,
+    isExistsQueryVerify, isNotUserInBlockList,
+    isTheSamePlayer, isUserInBlockList, playerConcatenateId
+} from "../middleware/players";
 import { checkPermission } from "../middleware/protected";
 import { queryTypes } from "../utils/enums";
-import {getIdFromParams} from "../middleware/managers";
+import { getIdFromParams } from "../middleware/managers";
 
 const playerRoute = express.Router();
 
@@ -67,6 +73,28 @@ playerRoute.get(
     checkPermission.bind({ permission: 'getPlayerById' }),
     getIdFromParams,
     getPlayerById
+)
+
+playerRoute.post(
+    "/block",
+    verify,
+    checkPermission.bind({ permission: 'blockPlayer' }),
+    checkPlayerRole,
+    playerConcatenateId,
+    isNotUserInBlockList,
+    checkDescription,
+    blockPlayer
+)
+
+playerRoute.post(
+    "/unblock",
+    verify,
+    checkPermission.bind({ permission: 'unblockPlayer' }),
+    checkPlayerRole,
+    playerConcatenateId,
+    isUserInBlockList,
+    checkDescription,
+    unBlockPlayer
 )
 
 export { playerRoute };
