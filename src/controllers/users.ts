@@ -1,12 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import * as config from "config";
 import * as fs from "fs";
 
 import { create } from "../middleware/token";
 import { getRoleIdByName } from "../services/roles";
 import { createDevice, isExistDevice,  } from "../services/devices";
 import { clearUserCodes } from "../services/verificationCodes";
-import { sendSimpleMail } from "../utils/smtp";
+import { sendSimpleMail, createHtmlLink } from "../utils/smtp";
 import { codeToken } from "../middleware/token";
 import { encrypt, encryptBySalt } from "../utils/security";
 import { Exception } from "../utils/classes";
@@ -24,10 +23,7 @@ import {
     setUserPhoto
 } from "../services/users";
 import { Photo, User, Device, VerificationCode } from "../utils/classes";
-import {getTeamNameByUserId} from "../services/teams";
-import {isExistsUserInBlockList} from "../services/blockList";
-
-const url: string = config.get('url');
+import { isExistsUserInBlockList } from "../services/blockList";
 
 export async function signUp(req: Request, res: Response, next: NextFunction) {
     try {
@@ -53,8 +49,8 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
                 user.id = await createUser(user);
 
                 await createDevice(device, user.id);
-
-                res.status(200).json({ token: await create({ userId: user.id }) });
+                const token = await create({ userId: user.id });
+                res.status(200).json({ token });
             } else {
                 next(new Exception(400, "Password mismatch"));
             }
@@ -84,9 +80,10 @@ export async function signIn(req: Request, res: Response, next: NextFunction) {
             const isValid: boolean = await isUserValid(user.email, encryptPassword);
             user.id = await getIdByEmail(user.email);
 
-            if(isValid)
-                res.status(200).json({ token: await create({ userId: user.id }) });
-            else
+            if(isValid) {
+                const token = await create({ userId: user.id });
+                res.status(200).json({ token });
+            } else
                 next(new Exception(400, "Email or password isn`t correct"));
         } else
             next(new Exception(400, "Can`t find user"));
@@ -139,11 +136,11 @@ export async function sendRecoverToken(req: Request, res: Response, next: NextFu
             user.id = await getIdByEmail(user.email);
             const tokenToRecoverPassword: string = await codeToken(user.id);
             await sendSimpleMail(
-                `<a href="${ url }/forgot-password?token=${ tokenToRecoverPassword }">Change password</a>`,
+                createHtmlLink("/forgot-password", "token", tokenToRecoverPassword, "Change password"),
                 "Recover user password",
                 user.email
             );
-            res.status(200).json({ message: 'check email to recover password' });
+            res.status(200).json({ message: 'Check email to recover password' });
         } else
             next(new Exception(400, "Can`t find user"));
     } catch (e) {
@@ -165,6 +162,7 @@ export async function registerDevice(req: Request, res: Response, next: NextFunc
         verifyCode.code = req.body.code;
         user.id = req.body.userId;
         const isUnique = !(await isExistDevice(device, user.id));
+
         if(isUnique) {
             const isValidCode: boolean = await isUserHasCode(user.id, verifyCode.code);
             if(isValidCode) {
@@ -172,7 +170,7 @@ export async function registerDevice(req: Request, res: Response, next: NextFunc
                 await clearUserCodes(user.id);
                 res.status(200).json({ message: 'Device is register' });
             } else
-                next(new Exception(400, "Invalid code"))  ;
+                next(new Exception(400, "Invalid code"));
         } else
             next(new Exception(400, "This device already exists"));
     } catch (e) {
@@ -188,9 +186,9 @@ export async function getUserProfile(req: Request, res: Response, next: NextFunc
         const user = new User();
         user.id = req.body.userId;
         //const teamInfo = await getTeamNameByUserId(user.id);
-        res.status(200).json(await getUser(user.id));
+        const userProfile = await getUser(user.id);
+        res.status(200).json(userProfile);
     } catch (e) {
-        console.log(e);
         if(e instanceof Exception)
             next(e);
         else

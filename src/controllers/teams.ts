@@ -24,7 +24,8 @@ export async function registerTeam(req: Request, res: Response, next: NextFuncti
 export async function getTeamPlayers(req: Request, res: Response, next: NextFunction) {
     try {
         const { name } = req.body;
-        res.status(200).json(await getTeamMembers(name));
+        const teamMembers = await getTeamMembers(name);
+        res.status(200).json(teamMembers);
     } catch (e) {
         if(e instanceof Exception)
             next(e);
@@ -35,7 +36,8 @@ export async function getTeamPlayers(req: Request, res: Response, next: NextFunc
 
 export async function getPlayersWhoIntoTeam(req: Request, res: Response, next: NextFunction) {
     try {
-        res.status(200).json(await getUsersInTeam());
+        const playersInTeams = await getUsersInTeam();
+        res.status(200).json(playersInTeams);
     } catch (e) {
         if(e instanceof Exception)
             next(e);

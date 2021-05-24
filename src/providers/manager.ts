@@ -2,6 +2,15 @@ import * as express from 'express';
 
 import { verify } from "../middleware/token";
 import { checkPermission } from "../middleware/protected";
+import { getUserIdByQuery, isQueryExists } from "../middleware/queries";
+import { queryTypes, userRoles } from "../utils/enums";
+import { checkUserRole, checkDescription } from "../middleware/global";
+import {
+    parseManagerId,
+    getIdFromParams,
+    blockManagerVerify,
+    unblockManagerVerify
+} from "../middleware/managers";
 import {
     acceptManager,
     declineManager,
@@ -10,16 +19,6 @@ import {
     blockManager,
     unblockManager
 } from "../controllers/managers";
-import { getUserIdByQuery } from "../middleware/queries";
-import {
-    checkManagerRole,
-    getIdFromParams,
-    blockManagerVerify,
-    unblockManagerVerify,
-    isQueryExists
-} from "../middleware/managers";
-import {queryTypes} from "../utils/enums";
-import {checkDescription} from "../middleware/players";
 
 const managerRoute = express.Router();
 
@@ -54,7 +53,7 @@ managerRoute.get(
     verify,
     checkPermission.bind({ permission: 'getManagers' }),
     getIdFromParams,
-    checkManagerRole,
+    checkUserRole.bind({ roleName: userRoles.MANAGER }),
     getManagerById
 );
 
@@ -62,7 +61,8 @@ managerRoute.post(
     "/block",
     verify,
     checkPermission.bind({ permission: 'blockManager' }),
-    checkManagerRole,
+    parseManagerId,
+    checkUserRole.bind({ roleName: userRoles.MANAGER }),
     blockManagerVerify,
     checkDescription,
     blockManager
@@ -72,7 +72,8 @@ managerRoute.delete(
     "/unblock",
     verify,
     checkPermission.bind({ permission: 'unblockManager' }),
-    checkManagerRole,
+    parseManagerId,
+    checkUserRole.bind({ roleName: userRoles.MANAGER }),
     unblockManagerVerify,
     checkDescription,
     unblockManager

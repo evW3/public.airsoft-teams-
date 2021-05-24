@@ -1,21 +1,22 @@
 import { NextFunction, Request, Response } from "express";
 import { changeQueryStatus } from "../services/queries";
 import { statuses } from "../utils/enums";
-import {Exception, User} from "../utils/classes";
+import { Exception, User } from "../utils/classes";
 import { createTeamMember, deleteTeamMember } from "../services/teamMembers";
 import { getQueryParameter } from "../services/queryParams";
 import { createComment } from "../services/comments";
 import { createQueriesComments } from "../services/queriesComments";
-import {getEmailByUserId, getUser} from "../services/users";
-import {sendSimpleMail} from "../utils/smtp";
-import {blockUser, unblockUser} from "../services/blockList";
+import { getEmailByUserId, getUser } from "../services/users";
+import { sendSimpleMail } from "../utils/smtp";
+import { blockUser, unblockUser } from "../services/blockList";
 
 export async function acceptJoinTeam(req: Request, res: Response, next: NextFunction) {
     try {
-        const { queryId, playerId } = req.body;
+        const { queryId } = req.body;
+        const user = req.body.userObject;
         const param = JSON.parse(((await getQueryParameter(queryId)).parameter));
         if(param.teamId) {
-            await createTeamMember(playerId, param.teamId);
+            await createTeamMember(user.id, param.teamId);
             await changeQueryStatus(queryId, statuses.ACCEPTED);
             res.status(200).json({ message: "Moved player successfully" });
         } else
@@ -45,9 +46,10 @@ export async function declineJoinTeam(req: Request, res: Response, next: NextFun
 
 export async function acceptExitFromTeam(req: Request, res: Response, next: NextFunction) {
     try {
-        const { playerId, queryId } = req.body;
+        const { queryId } = req.body;
+        const user = req.body.userObject;
         await changeQueryStatus(queryId, statuses.ACCEPTED);
-        await deleteTeamMember(playerId);
+        await deleteTeamMember(user.id);
         res.status(200).json({ message: "Player successfully moved" })
     } catch (e) {
         if(e instanceof Exception)
@@ -72,9 +74,8 @@ export async function declineExitFromTeam(req: Request, res: Response, next: Nex
 
 export async function removePlayerFromTeam(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = new User();
+        const user = req.body.userObject;
         const { description } = req.body;
-        user.id = req.body.playerId;
         user.email = await getEmailByUserId(user.id);
         await deleteTeamMember(user.id);
         await sendSimpleMail(`${ description }`, "Исключение из команды", user.email);
@@ -89,8 +90,8 @@ export async function removePlayerFromTeam(req: Request, res: Response, next: Ne
 
 export async function getPlayerById(req: Request, res: Response, next: NextFunction) {
     try {
-        const { id } = req.body;
-        res.status(200).json(await getUser(id));
+        const user = req.body.userObject;
+        res.status(200).json(await getUser(user.id));
     } catch (e) {
         if(e instanceof Exception)
             next(e);
@@ -101,10 +102,11 @@ export async function getPlayerById(req: Request, res: Response, next: NextFunct
 
 export async function blockPlayer(req: Request, res: Response, next: NextFunction) {
     try {
-        const { playerId, description } = req.body;
-        const email = await getEmailByUserId(playerId);
-        await blockUser(playerId, description);
-        await sendSimpleMail(description, "Blocked account", email);
+        const { description } = req.body;
+        const user = req.body.userObject;
+        user.email = await getEmailByUserId(user.id);
+        await blockUser(user.id, description);
+        await sendSimpleMail(description, "Blocked account", user.email);
         res.status(200).json({ message: "Player was blocked" });
     } catch (e) {
         if(e instanceof Exception)
@@ -116,9 +118,10 @@ export async function blockPlayer(req: Request, res: Response, next: NextFunctio
 
 export async function unBlockPlayer(req: Request, res: Response, next: NextFunction) {
     try {
-        const { playerId, description} = req.body;
-        await unblockUser(playerId);
-        const email = await getEmailByUserId(playerId);
+        const { description } = req.body;
+        const user = req.body.userObject;
+        await unblockUser(user.id);
+        const email = await getEmailByUserId(user.id);
         await sendSimpleMail(description, "Unblocked account", email);
         res.status(200).json({ message: "Player was unblock" });
     } catch (e) {

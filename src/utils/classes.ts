@@ -221,7 +221,7 @@ export class Query {
     private _status: string;
     private _type: string;
     private _userId: number;
-    private _id: number
+    private _id: number;
 
     set status(status: string){
         if(typeof status === "string")

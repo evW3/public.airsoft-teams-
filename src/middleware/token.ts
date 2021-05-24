@@ -4,15 +4,13 @@ import * as config from 'config';
 
 import { getUserDevices } from "../services/devices";
 import { getEmailByUserId } from "../services/users";
-import { sendSimpleMail } from "../utils/smtp";
+import { sendSimpleMail, createHtmlLink } from "../utils/smtp";
 import { createCode } from "../services/verificationCodes";
 import { IToken, ICodeTokenBody, IDefaultTokenBody } from "../utils/interfaces";
 import { getBlockDescription, isExistsUserInBlockList } from "../services/blockList";
 import { Device, Exception, User } from "../utils/classes";
 
 const tokenData: IToken = config.get('token');
-
-const url: string = config.get('url');
 
 export async function codeToken(userId: number, device: Device | null = null): Promise<string> {
     const code: string = await createCode(userId);
@@ -58,7 +56,7 @@ export async function verify(req: Request, res: Response, next: NextFunction) {
                 const token = await codeToken(user.id, device);
                 user.email = await getEmailByUserId(user.id);
                 await sendSimpleMail(
-                    `<a href="${ url }/register-device?token=${ token }">Activate device</a>`,
+                    createHtmlLink("register-device", "token", token, "Activate device"),
                     "Register new device",
                     user.email
                 );

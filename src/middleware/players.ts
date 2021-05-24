@@ -1,73 +1,16 @@
 import { NextFunction, Request, Response } from "express";
-import {Exception, Query, User} from "../utils/classes";
-import { getUserIdByQueryId } from "../services/users";
-import {statuses, userRoles} from "../utils/enums";
-import { isExistQuery } from "../services/queries";
-import {IThisQueryType} from "../utils/interfaces";
-import {getUserRole} from "../services/roles";
-import {isExistsUserInBlockList} from "../services/blockList";
 
-export async function getPlayerIdByQueryId(req: Request, res: Response, next: NextFunction) {
-    try {
-        const { queryId } = req.body;
-        if(queryId && typeof queryId === "number") {
-            const playerId = await getUserIdByQueryId(queryId);
-            if(playerId) {
-                req.body = { ...req.body, playerId };
-                next();
-            } else
-                next(new Exception(400, "Can`t find user query"));
-        } else
-            next(new Exception(400, "Parameters isn`t valid"));
-    } catch (e) {
-        if(e instanceof Exception)
-            next(e);
-        else
-            next(new Exception(500, "Can`t getPlayerIdByQueryId"));
-    }
-}
-
-export async function isExistsQueryVerify(this: IThisQueryType, req: Request, res: Response, next: NextFunction) {
-    try {
-        const query = new Query();
-
-        query.userId = req.body.playerId;
-        query.type = this.queryType;
-        query.id = req.body.queryId;
-        query.status = statuses.PROCESSED;
-
-        if(await isExistQuery(query)) {
-            next();
-        } else
-            next(new Exception(400, "Can`t find query"));
-    } catch (e) {
-        if(e instanceof Exception)
-            next(e);
-        else
-            next(new Exception(500, "Can`t getPlayerIdByQueryId"));
-    }
-}
-
-export async function checkDescription(req: Request, res: Response, next: NextFunction) {
-    try {
-        const { description } = req.body;
-        if(description && typeof description === "string")
-            next();
-        else
-            next(new Exception(400, "Parameters isn`t valid"));
-    } catch (e) {
-        if(e instanceof Exception)
-            next(e);
-        else
-            next(new Exception(500, "Can`t check description"));
-    }
-}
+import { Exception, User } from "../utils/classes";
+import { userRoles } from "../utils/enums";
+import { getUserRole } from "../services/roles";
+import { isExistsUserInBlockList } from "../services/blockList";
 
 export async function isTheSamePlayer(req: Request, res: Response, next: NextFunction) {
     try {
-        const { playerId, userId } = req.body;
+        const { userId } = req.body;
+        const user = req.body.userObject;
         if(userRoles.PLAYER === await getUserRole(userId)) {
-            if(playerId === userId)
+            if(user.id === userId)
                 next();
             else
                 next(new Exception(403, "Can`t change user query status"));
@@ -81,26 +24,9 @@ export async function isTheSamePlayer(req: Request, res: Response, next: NextFun
     }
 }
 
-export async function checkPlayerRole(req: Request, res: Response, next: NextFunction) {
-    try {
-        const user = new User();
-        user.id = req.body.playerId;
-        if(userRoles.PLAYER === await getUserRole(user.id))
-            next();
-        else
-            next(new Exception(400, "Can`t find player"));
-    } catch (e) {
-        if(e instanceof Exception)
-            next(e);
-        else
-            next(new Exception(500, "Can`t check player role"));
-    }
-}
-
 export async function isNotUserInBlockList(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = new User();
-        user.id = req.body.id;
+        const user = req.body.userObject;
         if(!(await isExistsUserInBlockList(user.id)))
             next();
         else
@@ -115,9 +41,9 @@ export async function isNotUserInBlockList(req: Request, res: Response, next: Ne
 
 export async function isUserInBlockList(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = new User();
-        user.id = req.body.id;
-        if(await isExistsUserInBlockList(user.id))
+        const user = req.body.userObject;
+        const isUserBanned = await isExistsUserInBlockList(user.id);
+        if(isUserBanned)
             next();
         else
             next(new Exception(400, "Can`t find user in block list"));
@@ -129,16 +55,16 @@ export async function isUserInBlockList(req: Request, res: Response, next: NextF
     }
 }
 
-export async function playerConcatenateId(req: Request, res: Response, next: NextFunction) {
+export function parsePlayerId(req: Request, res: Response, next: NextFunction) {
     try {
         const user = new User();
         user.id = req.body.playerId;
-        req.body = { ...req.body, id: user.id };
+        req.body = { ...req.body, userObject: user };
         next();
     } catch (e) {
         if(e instanceof Exception)
             next(e);
         else
-            next(new Exception(500, "Can`t check user in block list"));
+            next(new Exception(500, "Can`t parse player id"));
     }
 }

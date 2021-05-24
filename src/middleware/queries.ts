@@ -31,15 +31,10 @@ export async function isManagerRole(req: Request, res: Response, next: NextFunct
 export async function getUserIdByQuery(req: Request, res: Response, next: NextFunction) {
     try {
         const user = new User();
-
         const { queryId } = req.body;
-
         user.id = await getUserIdByQueryId(queryId);
-
-        req.body = { ...req.body, userId: user.id };
-
+        req.body = { ...req.body, userObject: user };
         next();
-
     } catch (e) {
         if(e instanceof Exception)
             next(e);
@@ -50,9 +45,6 @@ export async function getUserIdByQuery(req: Request, res: Response, next: NextFu
 
 export async function isExistTeam(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = new User();
-
-        user.id = req.body.userId;
         const { teamId } = req.body;
 
         if(teamId && typeof teamId === "number" && await isExistTeamById(teamId)) {
@@ -91,9 +83,9 @@ export async function checkQueryExists(this: IThisQueryType, req: Request, res: 
 
 export async function isPlayerInTeamVerify(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = new User();
-        user.id = req.body.id;
-        if(await isPlayerInTeam(user.id)) {
+        const user = req.body.userObject;
+        const isPlayerHaveTeam = await isPlayerInTeam(user.id);
+        if(isPlayerHaveTeam) {
             next();
         } else
             next(new Exception(400, "Player isn`t in team"));
@@ -109,7 +101,7 @@ export async function parseUserId(req: Request, res: Response, next: NextFunctio
     try {
         const user = new User();
         user.id = req.body.userId;
-        req.body = { ...req.body, id: user.id };
+        req.body = { ...req.body, userObject: user };
         next();
     } catch (e) {
         if(e instanceof Exception)
@@ -121,8 +113,7 @@ export async function parseUserId(req: Request, res: Response, next: NextFunctio
 
 export async function isNotPlayerInTeamVerify(req: Request, res: Response, next: NextFunction) {
     try {
-        const user = new User();
-        user.id = req.body.userId;
+        const user = req.body.userObject;
         if(!await isPlayerInTeam(user.id)) {
             next();
         } else
@@ -132,5 +123,29 @@ export async function isNotPlayerInTeamVerify(req: Request, res: Response, next:
             next(e);
         else
             next(new Exception(500, "Can`t verify player team"));
+    }
+}
+
+export async function isQueryExists(this: IThisQueryType, req: Request, res: Response, next: NextFunction) {
+    try {
+        const query = new Query();
+        const user = req.body.userObject;
+
+        query.userId = user.id;
+        query.type = this.queryType;
+        query.id = req.body.queryId;
+        query.status = statuses.PROCESSED;
+
+        const isExists = await isExistQuery(query);
+        if(isExists){
+            req.body = { ...req.body, queryObject: query };
+            next();
+        } else
+            next(new Exception(400, "Can`t find query"));
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t check query exists"));
     }
 }

@@ -5,6 +5,8 @@ import { ISMTP } from "./interfaces";
 
 const smtpData: ISMTP = config.get('smtp');
 
+const url: string = config.get('url');
+
 const transport = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -13,7 +15,7 @@ const transport = nodemailer.createTransport({
     }
 });
 
-export async function sendSimpleMail(text: string, subject: string, to: string) {
+export async function sendSimpleMail(text: string, subject: string, to: string): Promise<void> {
     try {
         await transport.sendMail({
             from: smtpData.email,
@@ -24,4 +26,8 @@ export async function sendSimpleMail(text: string, subject: string, to: string) 
     } catch (e) {
         console.log('[ERROR] can`t send message: ', e);
     }
+}
+
+export function createHtmlLink(path: string, param: string, paramValue: string, text: string): string {
+    return `<a href="${ url }${ path }?${ param }=${ paramValue }">${ text }</a>`;
 }

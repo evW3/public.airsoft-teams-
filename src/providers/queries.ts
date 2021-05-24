@@ -1,17 +1,18 @@
 import * as express from "express";
 
 import { verify } from "../middleware/token";
+import { createRoleQuery, createJoinTeamQuery, createExitTeamQuery } from "../controllers/queries";
+import { checkPermission } from "../middleware/protected";
+import {queryTypes, userRoles} from "../utils/enums";
+import { isQueryUniqueVerify } from "../middleware/managers";
 import {
     isPlayerInTeamVerify,
     checkQueryExists,
     isExistTeam,
-    isManagerRole,
-    isNotPlayerInTeamVerify, parseUserId
+    isNotPlayerInTeamVerify,
+    parseUserId
 } from "../middleware/queries";
-import { createRoleQuery, createJoinTeamQuery, createExitTeamQuery } from "../controllers/queries";
-import { checkPermission } from "../middleware/protected";
-import { queryTypes } from "../utils/enums";
-import {isQueryUniqueVerify} from "../middleware/managers";
+import {checkUserRole} from "../middleware/global";
 
 const queriesRoute = express.Router();
 
@@ -21,7 +22,7 @@ queriesRoute.post(
     checkPermission.bind({ permission: 'changeRole' }),
     isQueryUniqueVerify.bind({ queryType: queryTypes.CHANGE_ROLE }),
     isNotPlayerInTeamVerify,
-    isManagerRole,
+    checkUserRole.bind({ roleName: userRoles.MANAGER }),
     createRoleQuery
 );
 

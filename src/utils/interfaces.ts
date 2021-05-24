@@ -119,6 +119,10 @@ export interface IThisQueryType {
     queryType: string
 }
 
+export interface IRoleName {
+    roleName: string
+}
+
 export interface IBody {
     email: string,
     userId: number

@@ -8,15 +8,16 @@ import { blockUser, unblockUser } from "../services/blockList";
 import { createComment } from "../services/comments";
 import { createQueriesComments } from "../services/queriesComments";
 import { Exception } from "../utils/classes";
-import {sendSimpleMail} from "../utils/smtp";
+import { sendSimpleMail } from "../utils/smtp";
 
 export async function acceptManager(req: Request, res: Response, next: NextFunction) {
     try {
-        const { queryId, userId } = req.body;
+        const { queryId } = req.body;
+        const user = req.body.userObject;
         await changeQueryStatus(queryId, statuses.ACCEPTED);
         const roleId = await getIdRole(userRoles.MANAGER);
         if(roleId) {
-            await changeUserRole(roleId, userId);
+            await changeUserRole(roleId, user.id);
             res.status(200).json({ message: "Manager role was changed" });
         }
     } catch (e) {
@@ -44,7 +45,8 @@ export async function declineManager(req: Request, res: Response, next: NextFunc
 
 export async function getManagers(req: Request, res: Response, next: NextFunction) {
     try {
-        res.status(200).json(await getUsersByRole(userRoles.MANAGER));
+        const managers = await getUsersByRole(userRoles.MANAGER);
+        res.status(200).json(managers);
     } catch (e) {
         if(e instanceof Exception)
             next(e);
@@ -55,8 +57,9 @@ export async function getManagers(req: Request, res: Response, next: NextFunctio
 
 export async function getManagerById(req: Request, res: Response, next: NextFunction) {
     try {
-        const { id } = req.body;
-        res.status(200).json(await  getUser(id));
+        const user = req.body.userObject;
+        const userInfo = await getUser(user.id);
+        res.status(200).json(userInfo);
     } catch (e) {
         if(e instanceof Exception)
             next(e);
@@ -67,9 +70,10 @@ export async function getManagerById(req: Request, res: Response, next: NextFunc
 
 export async function blockManager(req: Request, res: Response, next: NextFunction) {
     try {
-        const { managerId, description } = req.body;
-        const email = await getEmailByUserId(managerId);
-        await blockUser(managerId, description);
+        const { description } = req.body;
+        const user = req.body.userObject;
+        const email = await getEmailByUserId(user.id);
+        await blockUser(user.id, description);
         await sendSimpleMail(description, "Blocked account", email);
         res.status(200).json({ message: "Manager was blocked" });
     } catch (e) {
@@ -82,9 +86,10 @@ export async function blockManager(req: Request, res: Response, next: NextFuncti
 
 export async function unblockManager(req: Request, res: Response, next: NextFunction) {
     try {
-        const { managerId, description} = req.body;
-        await unblockUser(managerId);
-        const email = await getEmailByUserId(managerId);
+        const { description} = req.body;
+        const user = req.body.userObject;
+        await unblockUser(user.id);
+        const email = await getEmailByUserId(user.id);
         await sendSimpleMail(description, "Unblocked account", email);
         res.status(200).json({ message: "Manager was unblock" });
     } catch (e) {
