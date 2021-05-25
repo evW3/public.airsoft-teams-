@@ -23,8 +23,8 @@ export async function registerTeam(req: Request, res: Response, next: NextFuncti
 
 export async function getTeamPlayers(req: Request, res: Response, next: NextFunction) {
     try {
-        const { name } = req.body;
-        const teamMembers = await getTeamMembers(name);
+        const { teamId } = req.body;
+        const teamMembers = await getTeamMembers(teamId);
         res.status(200).json(teamMembers);
     } catch (e) {
         if(e instanceof Exception)

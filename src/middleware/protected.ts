@@ -10,6 +10,7 @@ export async function checkPermission(this: IThisProtected, req: Request, res: R
         user.id = req.body.userId;
         const role = await getUserRole(user.id);
         if(role && await isRoleHavePermission(role, this.permission)) {
+            req.body = { ...req.body, userObject: user };
             next();
         } else {
             next(new Exception(403, "Permission denied"));

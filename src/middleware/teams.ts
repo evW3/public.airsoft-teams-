@@ -3,9 +3,9 @@ import { Exception } from "../utils/classes";
 
 export function parseParameterName(req: Request, res: Response, next: NextFunction) {
     try {
-        const { name } = req.params;
-        if(name && typeof name === "string") {
-            req.body = { ...req.body, name };
+        const { teamId } = req.params;
+        if(teamId && typeof teamId === "number") {
+            req.body = { ...req.body, teamId };
             next();
         } else
             next(new Exception(400, "Parameters isn`t valid"));

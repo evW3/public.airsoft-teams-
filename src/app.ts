@@ -1,19 +1,21 @@
 import { app } from './configureServer';
 import * as config from 'config';
-//import { mRequest } from "./utils/MongoDB";
-// import { ModelsSynchronizer as model } from './utils/ModelsSynchronizer';
-// let ModelsSynchronizer = new model();
+
+const mongoose = require('mongoose');
+
+interface IMongo {
+    user: string,
+    password: string
+}
+
+const db: IMongo = config.get("mongo");
 
 (async () => {
     try {
         const port: number = config.get('port');
-        //await ModelsSynchronizer.syncAll();
-        // const test = new mRequest({
-        //     request: "GET",
-        //     params: { queryId: 1, userId: 2 }
-        // });
+        mongoose.connect(`mongodb+srv://${ db.user }:${ db.password }@cluster0.bjaxb.mongodb.net/airsoft-team?retryWrites=true&w=majority`)
+            .then(() => console.log("MongoDb connected"));
 
-        //await test.save();
         app.listen(port, () => console.log(`[SERVER]: Started on port: ${ port }!`));
     } catch (e) {
         console.log(`[ERROR] init error`);

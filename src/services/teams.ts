@@ -16,6 +16,6 @@ export async function isExistTeamById(id: number): Promise<boolean> {
     return await Teams.count({ where: { id } }) !== 0;
 }
 
-export async function getTeamMembers(name: string) {
-    return await Teams.findAll({ attributes:['name'], include: [{ model: Users, attributes: ['login', 'email'] }] });
+export async function getTeamMembers(id: number) {
+    return await Teams.findAll({ attributes:['name'], where: { id }, include: [{ model: Users, attributes: ['login', 'email'] }] });
 }

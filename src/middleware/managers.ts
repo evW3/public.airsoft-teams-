@@ -4,7 +4,7 @@ import { statuses } from "../utils/enums";
 import { isExistsUserInBlockList } from "../services/blockList";
 import { Exception, Query, User } from "../utils/classes";
 import { IThisQueryType } from "../utils/interfaces";
-import { isExistQuery, isQueryUnique } from "../services/queries";
+import { isQueryUnique } from "../services/queries";
 
 export async function getIdFromParams(req: Request, res: Response, next: NextFunction) {
     try {

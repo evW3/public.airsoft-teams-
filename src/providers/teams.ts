@@ -15,7 +15,7 @@ teamsRout.post(
 );
 
 teamsRout.get(
-    "/:name",
+    "/:teamId",
     verify,
     checkPermission.bind({ permission: 'getTeamMembers' }),
     parseParameterName,
