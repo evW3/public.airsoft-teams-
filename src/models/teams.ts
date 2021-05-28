@@ -1,4 +1,5 @@
-import { sequelize, DataTypes } from '../utils/BaseDB';
+import { DataTypes } from 'sequelize';
+import { sequelize } from "./index";
 import { ITeams } from "../utils/interfaces";
 
 const Teams = sequelize.define<ITeams>("teams",{

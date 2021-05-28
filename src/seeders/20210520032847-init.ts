@@ -1,7 +1,7 @@
 'use strict';
 import { QueryInterface } from "sequelize";
 import { getListPermissions, PermissionsList, getListRolesPermissions } from "../constants";
-import {encrypt} from "../utils/security";
+import { encrypt } from "../utils/security";
 
 
 const email = "byruk228i@gmail.com";

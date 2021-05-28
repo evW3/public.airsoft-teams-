@@ -1,4 +1,5 @@
-import { sequelize, DataTypes } from '../utils/BaseDB';
+import { DataTypes } from 'sequelize';
+import { sequelize } from "./index";
 import { v4 as uuidv4 } from 'uuid';
 import { IVerificationCodes } from "../utils/interfaces";
 

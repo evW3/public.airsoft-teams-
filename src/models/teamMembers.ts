@@ -1,4 +1,5 @@
-import { sequelize, DataTypes } from '../utils/BaseDB';
+import { DataTypes } from 'sequelize';
+import { sequelize } from "./index";
 import { ITeamMembers } from "../utils/interfaces";
 import { Teams} from "./relations";
 import { Users } from "./users"

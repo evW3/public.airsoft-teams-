@@ -1,4 +1,5 @@
-import {DataTypes, sequelize} from "../utils/BaseDB";
+import { DataTypes } from 'sequelize';
+import { sequelize } from "./index";
 import {IQueries} from "../utils/interfaces";
 import {queryTypes, statuses} from "../utils/enums";
 

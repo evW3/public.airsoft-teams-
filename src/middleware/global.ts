@@ -1,6 +1,6 @@
 import { IRoleName } from "../utils/interfaces";
 import { NextFunction, Request, Response } from "express";
-import { Exception, User } from "../utils/classes";
+import { Exception } from "../utils/classes";
 import { getUserRole } from "../services/roles";
 
 export async function checkUserRole(this: IRoleName, req: Request, res: Response, next: NextFunction) {

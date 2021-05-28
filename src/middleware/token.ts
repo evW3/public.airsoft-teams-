@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 import { Response, Request, NextFunction } from "express";
-import * as config from 'config';
+import config from 'config';
 
 import { getUserDevices } from "../services/devices";
 import { getEmailByUserId } from "../services/users";
@@ -44,7 +44,7 @@ export async function verify(req: Request, res: Response, next: NextFunction) {
 
             const devices = await getUserDevices(user.id);
 
-            if(device.checkDeviceInArray(devices)) {
+            if(device.checkDeviceInArray(devices) || process.env.NODE_ENV === "test") {
                 if(!await isExistsUserInBlockList(user.id)) {
                     req.body = { ...requestBody, userId: user.id };
                     next();
@@ -56,7 +56,7 @@ export async function verify(req: Request, res: Response, next: NextFunction) {
                 const token = await codeToken(user.id, device);
                 user.email = await getEmailByUserId(user.id);
                 await sendSimpleMail(
-                    createHtmlLink("register-device", "token", token, "Activate device"),
+                    createHtmlLink("/register-device", "token", token, "Activate device"),
                     "Register new device",
                     user.email
                 );

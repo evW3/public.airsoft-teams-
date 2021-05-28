@@ -1,4 +1,5 @@
-import { sequelize, DataTypes } from '../utils/BaseDB';
+import { DataTypes } from 'sequelize';
+import { sequelize } from "./index";
 import { IComments } from "../utils/interfaces";
 
 const Comments = sequelize.define<IComments>("comments", {

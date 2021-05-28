@@ -1,5 +1,5 @@
-import * as bcrypt from "bcrypt";
-import * as config from "config";
+import bcrypt from "bcrypt";
+import config from "config";
 import { IBcrypt } from "./interfaces";
 
 const bcryptInfo: IBcrypt = config.get('security');

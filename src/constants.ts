@@ -1,5 +1,5 @@
 import {IKeyValue, IObjectWithName, IRoles} from "./utils/interfaces";
-import * as config from "config";
+import config from "config";
 import { IPermissions } from "./utils/interfaces";
 
 const url: string = config.get('url');
@@ -26,7 +26,8 @@ export const PermissionsList: IKeyValue = {
     blockPlayer: ['ADMIN', 'MANAGER' ],
     changeRole: ['PLAYER'],
     exitTeam: ['PLAYER'],
-    joinTeam: ['PLAYER']
+    joinTeam: ['PLAYER'],
+    getQueries: ['ADMIN', 'MANAGER' ]
 }
 
 export function getListPermissions(PermissionsList: IKeyValue): IObjectWithName[] {

@@ -1,5 +1,5 @@
-import { sequelize, DataTypes } from '../utils/BaseDB';
-const db = require('./index');
+import { DataTypes } from 'sequelize';
+import { sequelize } from "./index";
 import { IBlockList } from "../utils/interfaces";
 
 const BlockList = sequelize.define<IBlockList>("block_list", {

@@ -1,4 +1,5 @@
-import { sequelize, DataTypes } from '../utils/BaseDB'
+import { DataTypes } from 'sequelize';
+import { sequelize } from "./index";
 import { Roles } from "./roles";
 import { Permissions } from "./permissions";
 import { IRolePermissions } from "../utils/interfaces";

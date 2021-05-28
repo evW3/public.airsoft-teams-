@@ -1,8 +1,23 @@
 import { NextFunction, Request, Response } from "express";
-import { createQuery } from "../services/queries";
-import { queryTypes, statuses } from "../utils/enums";
-import { Exception, User, Query } from "../utils/classes";
+import { createQuery, findQueries } from "../services/queries";
+import { statuses } from "../utils/enums";
+import { Exception } from "../utils/classes";
 import { createQueryParameter } from "../services/queryParams";
+
+
+export async function getQueries(req: Request, res: Response, next: NextFunction) {
+    try {
+        const limit = Number.parseInt(req.body.limit) || 0;
+        const offset = Number.parseInt(req.body.offset) || 0;
+        const queries = await findQueries(statuses.PROCESSED, limit, offset);
+        res.status(200).json(queries);
+    } catch (e) {
+        if(e instanceof Exception)
+            next(e);
+        else
+            next(new Exception(500, "Can`t get queries "));
+    }
+}
 
 export async function createRoleQuery(req: Request, res: Response, next: NextFunction) {
     try {

@@ -1,4 +1,4 @@
-import * as config from "config";
+import config from "config";
 import * as nodemailer from "nodemailer";
 
 import { ISMTP } from "./interfaces";

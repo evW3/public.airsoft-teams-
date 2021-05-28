@@ -5,6 +5,6 @@ export async function createCode(userId: number): Promise<string> {
     return verificationCode.code;
 }
 
-export async function clearUserCodes(userId: number) {
+export async function clearUserCodes(userId: number): Promise<void> {
     await VerificationCodes.destroy({ where: { userId } });
 }

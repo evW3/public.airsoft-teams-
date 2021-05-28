@@ -30,8 +30,8 @@ export async function signUp(req: Request, res: Response, next: NextFunction) {
         const user = new User();
         const device = new Device();
         const { password, repeatPassword } = req.body;
-        const roleName = "PLAYER";
 
+        const roleName = "PLAYER";
         user.email = req.body.email;
         device.ip = req.ip;
         device.browser = req.headers['user-agent'];
@@ -212,6 +212,7 @@ export async function updateUserProfile(req: Request, res: Response, next: NextF
         user.email = await getEmailByUserId(user.id);
 
         if(currentPassword && newPassword) {
+            console.log(currentPassword, newPassword);
             user.passwordSalt = await getUserSalt(user.email);
             user.password = await encryptBySalt(currentPassword, user.passwordSalt);
             const isValid: boolean = await isUserValid(user.email, user.password);

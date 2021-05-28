@@ -13,6 +13,7 @@
     "paths": {},                              // A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. /
     "strict": true,                           // Enable all strict type-checking options. /
     "strictNullChecks": false,                // Enable strict null checks. /
-    "strictPropertyInitialization": false     // Enabl
+    "strictPropertyInitialization": false,     // Enabl
+    "esModuleInterop": true
   }
 }

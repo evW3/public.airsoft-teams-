@@ -136,3 +136,8 @@ export interface ITeam {
 export interface IObjectWithName {
     name: string
 }
+
+export interface IMongo {
+    user: string,
+    password: string
+}

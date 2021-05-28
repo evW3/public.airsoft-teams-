@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import * as formidable from "formidable";
+import formidable from "formidable";
 import { Exception, Photo } from "../utils/classes";
 import { v4 as uuidv4 } from "uuid";
 import * as path from "path";

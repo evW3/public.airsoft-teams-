@@ -14,6 +14,14 @@ export async function isQueryUnique(query: Query): Promise<boolean> {
     return await Queries.count({ where: { type: query.type, status: query.status }, include: [{ model: Users, where: { id: query.userId } }] }) === 0;
 }
 
-export async function changeQueryStatus(id: number, status: string) {
+export async function changeQueryStatus(id: number, status: string): Promise<void> {
     await Queries.update({ status }, { where: { id } });
+}
+
+export async function findQueries(status: string, limit: number, offset: number) {
+    return await Queries.findAll({
+        limit,
+        offset,
+        where: { status }
+    });
 }

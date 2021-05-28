@@ -1,7 +1,7 @@
 node_modules*
 .idea*
 package-lock.json
-config*
+config
 src/uploads
 desktop.ini
 dist*

@@ -1,4 +1,5 @@
-import { sequelize, DataTypes } from '../utils/BaseDB';
+import { DataTypes } from 'sequelize';
+import { sequelize } from "./index";
 import { IQueriesComments } from "../utils/interfaces";
 import { Queries, Comments } from "./relations";
 
