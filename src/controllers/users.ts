@@ -212,7 +212,6 @@ export async function updateUserProfile(req: Request, res: Response, next: NextF
         user.email = await getEmailByUserId(user.id);
 
         if(currentPassword && newPassword) {
-            console.log(currentPassword, newPassword);
             user.passwordSalt = await getUserSalt(user.email);
             user.password = await encryptBySalt(currentPassword, user.passwordSalt);
             const isValid: boolean = await isUserValid(user.email, user.password);

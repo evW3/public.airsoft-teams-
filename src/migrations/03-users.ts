@@ -36,6 +36,15 @@ module.exports = {
                   model: 'roles',
                   key: 'id'
               }
+          },
+          teamId: {
+              type: INTEGER,
+              references: {
+                  model: 'teams',
+                  key: 'id'
+              },
+              allowNull: true,
+              defaultValue: null
           }
       });
   },

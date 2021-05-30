@@ -1,7 +1,4 @@
-import {log} from "util";
-import {strict} from "assert";
-import {TokenExpiredError} from "jsonwebtoken";
-import {IDevices} from "./interfaces";
+import { IDevices } from "./interfaces";
 
 export class Photo {
     private _imagePathToLoad: string;
@@ -11,31 +8,31 @@ export class Photo {
     private _uniqueName: string;
 
     set imagePathToLoad(imagePathToLoad: string) {
-        if(imagePathToLoad === "string")
+        if(typeof imagePathToLoad === "string")
             this._imagePathToLoad = imagePathToLoad;
         else
             throw new Exception(400, "Parameters isn`t valid")
     }
     set name(name: string) {
-        if(name === "string")
+        if(typeof name === "string")
             this._name = name;
         else
             throw new Exception(400, "Parameters isn`t valid")
     }
     set url(url: string) {
-        if(url === "string")
+        if(typeof url === "string")
             this._url = url;
         else
             throw new Exception(400, "Parameters isn`t valid")
     }
     set fullFilePathToWrite(fullFilePathToWrite: string) {
-        if(fullFilePathToWrite === "string")
+        if(typeof fullFilePathToWrite === "string")
             this._fullFilePathToWrite = fullFilePathToWrite;
         else
             throw new Exception(400, "Parameters isn`t valid")
     }
     set uniqueName(uniqueName: string) {
-        if(uniqueName === "string")
+        if(typeof uniqueName === "string")
             this._uniqueName = uniqueName;
         else
             throw new Exception(400, "Parameters isn`t valid")
@@ -55,11 +52,6 @@ export class Photo {
     }
     get uniqueName() {
         return this._uniqueName;
-    }
-
-
-    isValid(): boolean {
-        return !!(this._imagePathToLoad && this._name);
     }
 }
 

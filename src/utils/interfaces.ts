@@ -10,14 +10,6 @@ export interface ISMTP {
     password: string
 }
 
-export interface IDatabase {
-    name: string,
-    port: number,
-    host: string,
-    login: string,
-    password: string
-}
-
 export interface IToken {
     secretKey: string,
     expiresIn: string,
@@ -63,7 +55,8 @@ export interface IUsers extends Model {
     password: string,
     password_salt: string,
     login: string,
-    profile_image: string
+    profile_image: string,
+    teamId: number
 }
 
 export interface IVerificationCodes extends Model {

@@ -9,6 +9,7 @@ import { createCode } from "../services/verificationCodes";
 import { IToken, ICodeTokenBody, IDefaultTokenBody } from "../utils/interfaces";
 import { getBlockDescription, isExistsUserInBlockList } from "../services/blockList";
 import { Device, Exception, User } from "../utils/classes";
+import { buildMode } from "../constants";
 
 const tokenData: IToken = config.get('token');
 
@@ -44,7 +45,7 @@ export async function verify(req: Request, res: Response, next: NextFunction) {
 
             const devices = await getUserDevices(user.id);
 
-            if(device.checkDeviceInArray(devices) || process.env.NODE_ENV === "test") {
+            if(device.checkDeviceInArray(devices) || buildMode === "test") {
                 if(!await isExistsUserInBlockList(user.id)) {
                     req.body = { ...requestBody, userId: user.id };
                     next();

@@ -24,10 +24,10 @@ export const PermissionsList: IKeyValue = {
     declineExitTeam: [ 'ADMIN', 'MANAGER', 'PLAYER' ],
     unblockPlayer: ['ADMIN', 'MANAGER' ],
     blockPlayer: ['ADMIN', 'MANAGER' ],
-    changeRole: ['PLAYER'],
-    exitTeam: ['PLAYER'],
-    joinTeam: ['PLAYER'],
-    getQueries: ['ADMIN', 'MANAGER' ]
+    changeRole: [ 'PLAYER' ],
+    exitTeam: [ 'PLAYER' ],
+    joinTeam: [ 'PLAYER' ],
+    getQueries: [ 'ADMIN', 'MANAGER' ]
 }
 
 export function getListPermissions(PermissionsList: IKeyValue): IObjectWithName[] {
@@ -63,3 +63,30 @@ export function getListRolesPermissions(PermissionsList: IKeyValue, permissions:
     }
     return rolePermissions;
 }
+
+export const buildMode = process.env.NODE_ENV;
+
+export const fakeData = [
+    {
+        email: "1happyrock1@gmail.com",
+        password: "test",
+        repeatPassword: "test"
+    },
+    {
+        email: "random@gaming.com",
+        password: "strangePassword",
+        repeatPassword: "strangePassword"
+    },
+    {
+        email: "vasia1980@mail.ru",
+        password: "1980vasia",
+        repeatPassword: "1980vasia"
+    }
+];
+
+export const dataToChange = [
+    {
+        login: "Master",
+        newPassword: "MNb@122"
+    }
+]

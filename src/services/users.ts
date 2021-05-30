@@ -1,6 +1,7 @@
 import { Roles, VerificationCodes, Teams, Queries, Users } from "../models/relations";
 import { User } from "../utils/classes";
 import { IUsers } from "../utils/interfaces";
+import { customIUser } from "../utils/types";
 
 export async function createUser(user: User): Promise<number> {
     const userInfo = await Users.create(user.createUserObject());
@@ -58,7 +59,7 @@ export async function setUserPhoto(id:number, profile_image: string): Promise<vo
     await Users.update({ profile_image }, { where: { id } });
 }
 
-export async function getUsersByRole(role: string): Promise<IUsers[]> {
+export async function getUsersByRole(role: string): Promise<customIUser[]> {
     return await Users.findAll({
         include: { model: Roles, where: { name: role }, attributes: [] },
         attributes: ['email', 'login'],
@@ -66,7 +67,7 @@ export async function getUsersByRole(role: string): Promise<IUsers[]> {
     });
 }
 
-export async function getUser(id: number): Promise<IUsers> {
+export async function getUser(id: number): Promise<customIUser> {
     return await Users.findOne({
         where: { id },
         attributes: ['email', 'login', 'profile_image'],
@@ -85,9 +86,9 @@ export async function getUserIdByQueryId(queryId: number): Promise<number | null
     return user.id;
 }
 
-export async function getUsersInTeam(): Promise<IUsers[]> {
+export async function getUsersInTeam(): Promise<customIUser[]> {
     return await Users.findAll({
         include: [{ model: Teams, attributes: ['name'] }],
         attributes: ['login', 'email', 'id']
-    })
+    });
 }
