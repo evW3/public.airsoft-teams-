@@ -20,8 +20,6 @@ export async function changeQueryStatus(id: number, status: string): Promise<voi
 
 export async function findQueries(status: string, limit: number, offset: number) {
     return await Queries.findAll({
-        limit,
-        offset,
         where: { status }
     });
 }

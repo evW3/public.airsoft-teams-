@@ -70,6 +70,7 @@ export async function isPlayerInTeamVerify(req: Request, res: Response, next: Ne
         } else
             next(new Exception(400, "Player isn`t in team"));
     } catch (e) {
+        console.log(e);
         if(e instanceof Exception)
             next(e);
         else

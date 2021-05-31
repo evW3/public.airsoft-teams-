@@ -1,7 +1,7 @@
 import * as express from 'express';
 
 import { checkPermission } from "../middleware/protected";
-import { queryTypes } from "../utils/enums";
+import {queryTypes, userRoles} from "../utils/enums";
 import { getIdFromParams } from "../middleware/managers";
 import {getUserIdByQuery, isPlayerInTeamVerify, isQueryExists} from "../middleware/queries";
 import { checkUserRole, checkDescription } from "../middleware/global";
@@ -86,7 +86,7 @@ playerRoute.post(
     verify,
     checkPermission.bind({ permission: 'blockPlayer' }),
     parsePlayerId,
-    checkUserRole,
+    checkUserRole.bind({ roleName: userRoles.PLAYER }),
     isNotUserInBlockList,
     checkDescription,
     blockPlayer
@@ -97,7 +97,7 @@ playerRoute.delete(
     verify,
     checkPermission.bind({ permission: 'unblockPlayer' }),
     parsePlayerId,
-    checkUserRole,
+    checkUserRole.bind({ roleName: userRoles.PLAYER }),
     isUserInBlockList,
     checkDescription,
     unBlockPlayer

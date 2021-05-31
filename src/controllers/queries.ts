@@ -7,7 +7,7 @@ import { createQueryParameter } from "../services/queryParams";
 
 export async function getQueries(req: Request, res: Response, next: NextFunction) {
     try {
-        const limit = Number.parseInt(req.body.limit) || 0;
+        const limit = Number.parseInt(req.body.limit) || 10;
         const offset = Number.parseInt(req.body.offset) || 0;
         const queries = await findQueries(statuses.PROCESSED, limit, offset);
         res.status(200).json(queries);

@@ -81,6 +81,7 @@ export async function removePlayerFromTeam(req: Request, res: Response, next: Ne
         res.status(200).json({ message: "Player successfully moved" });
         await sendSimpleMail(`${ description }`, "Исключение из команды", user.email);
     } catch (e) {
+        console.log(e);
         if(e instanceof Exception)
             next(e);
         else
@@ -106,8 +107,8 @@ export async function blockPlayer(req: Request, res: Response, next: NextFunctio
         const user = req.body.userObject;
         user.email = await getEmailByUserId(user.id);
         await blockUser(user.id, description);
-        await sendSimpleMail(description, "Blocked account", user.email);
         res.status(200).json({ message: "Player was blocked" });
+        await sendSimpleMail(description, "Blocked account", user.email);
     } catch (e) {
         if(e instanceof Exception)
             next(e);
@@ -122,8 +123,8 @@ export async function unBlockPlayer(req: Request, res: Response, next: NextFunct
         const user = req.body.userObject;
         await unblockUser(user.id);
         const email = await getEmailByUserId(user.id);
-        await sendSimpleMail(description, "Unblocked account", email);
         res.status(200).json({ message: "Player was unblock" });
+        await sendSimpleMail(description, "Unblocked account", email);
     } catch (e) {
         if(e instanceof Exception)
             next(e);

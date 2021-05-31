@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from "./index";
-import {IQueries} from "../utils/interfaces";
-import {queryTypes, statuses} from "../utils/enums";
+import { IQueries } from "../utils/interfaces";
+import { queryTypes, statuses } from "../utils/enums";
 
 const Queries = sequelize.define<IQueries>("queries", {
     id: {

@@ -12,6 +12,7 @@ export async function checkUserRole(this: IRoleName, req: Request, res: Response
         else
             next(new Exception(400, `User must have role: ${ this.roleName }`));
     } catch (e) {
+        console.log(e);
         if(e instanceof Exception)
             next(e);
         else
